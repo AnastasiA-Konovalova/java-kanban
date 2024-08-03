@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Epic extends Task {
@@ -17,13 +16,16 @@ public class Epic extends Task {
     public void setSubtasks(List<Subtask> subtasks) {
         this.subtasks = subtasks;
     }
-
-    public int getId() {
-        return id;
+    public void addSubtask(Subtask subtask) {
+        subtasks.add(subtask);
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public void deleteAllSubtasks() {
+        getSubtasks().clear();
+        setStatus(Status.NEW);
+    }
+    public void deleteSubtaskById(Subtask subtask) {
+        subtasks.remove(subtask);
     }
 
     @Override

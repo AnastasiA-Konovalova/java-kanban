@@ -1,14 +1,10 @@
 public class Subtask extends Task {
-    Epic epic;
+    private Epic epic;
 
     public Subtask(String name, String descriptions, Epic epic) {
 
         super(name, descriptions);
         this.epic = epic;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
     }
 
     public Epic getEpic() {
@@ -18,7 +14,6 @@ public class Subtask extends Task {
     public void setEpic(Epic epic) {
         this.epic = epic;
     }
-
 
     @Override
     public String toString() {
@@ -30,4 +25,3 @@ public class Subtask extends Task {
                 '}';
     }
 }
-
