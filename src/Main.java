@@ -16,8 +16,8 @@ public class Main {
         Task task4 = taskManager.createTask(task2);
         System.out.println(task4);
 
-        taskManager.showByIdTask(1);
-        taskManager.showByIdTask(2);
+        taskManager.getByIdTask(1);
+        taskManager.getByIdTask(2);
         //taskManager.deleteAllTasks();
 
         System.out.println("Change task1");
@@ -27,7 +27,7 @@ public class Main {
         taskManager.updateTask(task4);
 
         taskManager.deleteTaskById(2);
-        System.out.println(taskManager.showTask());
+        System.out.println(taskManager.getTaskList());
         System.out.println(task4);
 
 
@@ -40,7 +40,7 @@ public class Main {
         System.out.println("Create task2");
         Epic epic4 = taskManager.createEpic(epic2);
 
-        System.out.println(taskManager.showByIdEpic(3));
+        System.out.println(taskManager.getByIdEpic(3));
         //taskManager.deleteAllEpics();
 
         System.out.println("Change epic1");
@@ -48,8 +48,8 @@ public class Main {
         System.out.println("Change epic2");
         taskManager.updateEpic(epic4);
 
-        //taskManager.deleteEpicById(2);
-        System.out.println(taskManager.showEpic());
+        //taskManager.deleteEpicById(3);
+        System.out.println(taskManager.getEpicList());
 
 
         //Subtask
@@ -64,8 +64,7 @@ public class Main {
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask2.setStatus(Status.IN_PROGRESS);
 
-
-        taskManager.showByIdSubtask(subtask1.getId());
+        taskManager.getByIdSubtask(subtask1.getId());
         //taskManager.deleteAllSubtasks();
 
         System.out.println("Change subtask1");
@@ -73,7 +72,7 @@ public class Main {
         System.out.println("Change subtask2");
         taskManager.updateSubtask(subtask2);
 
-        taskManager.showEpic();
+        taskManager.getEpicList();
 
         //taskManager.deleteSubtaskById(3);
 
@@ -85,5 +84,14 @@ public class Main {
         System.out.println();
 
         //taskManager.deleteSubtaskById(6);
+        //проверка метода deleteEpicById();
+        System.out.println(taskManager.getEpicList());
+        taskManager.deleteEpicById(3);
+        System.out.println(taskManager.getEpicList());
+        System.out.println(taskManager.getSubtaskList());
+
+        //проверка метода getSubtaskFromEpic (предварительно закомментировать taskManager.deleteEpicById(3);)
+        //System.out.println(taskManager.getSubtaskFromEpic(3));
+
     }
 }

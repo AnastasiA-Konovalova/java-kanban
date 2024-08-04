@@ -34,36 +34,36 @@ public class TaskManager {
             Epic epic = epicMap.get(epicId);
             epic.addSubtask(subtask);
 
-            epic.setStatus(Status.NEW);
+            updateEpicStatus(epic);
             subtask.setEpic(epic);
         }
         return subtask;
     }
 
-    public Map<Integer, Task> showTask() {
+    public List<Task> getTaskList() {
         if (!taskMap.isEmpty()) {
             System.out.println("Список задач категории task.");
-            return taskMap;
+            return new ArrayList<>(taskMap.values());
         } else {
             System.out.println("Список пуст");
             return null;
         }
     }
 
-    public Map<Integer, Epic> showEpic() {
+    public List<Epic> getEpicList() {
         if (!epicMap.isEmpty()) {
             System.out.println("Список задач категории epic.");
-            return epicMap;
+            return new ArrayList<>(epicMap.values());
         } else {
             System.out.println("Список пуст");
             return null;
         }
     }
 
-    public Map<Integer, Subtask> showSubtask() {
+    public List<Subtask> getSubtaskList() {
         if (!epicMap.isEmpty()) {
             System.out.println("Список задач категории 'подзадачи'.");
-            return subtaskMap;
+            return new ArrayList<>(subtaskMap.values());
         } else {
             System.out.println("Список пуст");
             return null;
@@ -89,17 +89,17 @@ public class TaskManager {
         System.out.println("Подзадачи удалены.");
     }
 
-    public Task showByIdTask(Integer id) {
+    public Task getByIdTask(Integer id) {
         System.out.println("Задача c id " + id + ".");
         return taskMap.get(id);
     }
 
-    public Epic showByIdEpic(Integer id) {
+    public Epic getByIdEpic(Integer id) {
         System.out.println("Epic-задача с id " + id + ".");
         return epicMap.get(id);
     }
 
-    public Subtask showByIdSubtask(Integer id) {
+    public Subtask getByIdSubtask(Integer id) {
         System.out.println("Подзадача " + id + ".");
         return subtaskMap.get(id);
     }
@@ -128,7 +128,7 @@ public class TaskManager {
         updateEpicStatus(subtask.getEpic());
     }
 
-    public void updateEpicStatus(Epic epic) {
+    private void updateEpicStatus(Epic epic) {
         List<Subtask> subtasks = epic.getSubtasks();
         if (subtasks.isEmpty()) {
             epic.setStatus(Status.NEW);
@@ -169,9 +169,13 @@ public class TaskManager {
             return;
         }
         Epic removeEpic = epicMap.remove(id);
-        subtaskMap.remove(removeEpic.getId());
+        List<Subtask> subtasks = removeEpic.getSubtasks();
 
-        System.out.println("Epic-задача с id" + id + "удалена.");
+        for (Subtask subtask : subtasks) {
+            subtaskMap.remove(subtask.getId());
+        }
+
+        System.out.println("Epic-задача с id " + id + " удалена.");
     }
 
     public void deleteSubtaskById(Integer id) {
@@ -182,12 +186,12 @@ public class TaskManager {
         Subtask remove = subtaskMap.remove(id);
         Epic epic = remove.getEpic();
         epic.deleteSubtaskById(remove);
+
         updateEpicStatus(epic);
         System.out.println("Подзадача удалена.");
     }
 
-    public void getSubtaskFromEpic(Integer epicId) {
-        System.out.println("Задачи категории 'subtask' определенного epic с id " + epicId + ".");
-        System.out.println(epicMap.get(epicId).getSubtasks());
+    public List<Subtask> getSubtaskFromEpic(Integer epicId) {
+        return epicMap.get(epicId).getSubtasks();
     }
 }
