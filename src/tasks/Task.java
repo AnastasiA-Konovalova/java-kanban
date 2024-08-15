@@ -1,3 +1,7 @@
+package tasks;
+
+import status.Status;
+
 public class Task {
     protected String name;
     protected String description;
@@ -44,11 +48,26 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
+        return "tasks.Task{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", taskStatus=" + status +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Task task = (Task) o;
+
+        return id == task.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
     }
 }
