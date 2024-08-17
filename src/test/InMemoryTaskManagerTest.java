@@ -57,6 +57,7 @@ class InMemoryTaskManagerTest {
     @Test
     void fieldTasksNotChange() {
         taskManager.createTask(task1);
+
         Task checkCreateRight = taskManager.getTaskList().get(0);
 
         assertEquals("NameTask1", checkCreateRight.getName(), "Название задачи не " +
@@ -86,6 +87,7 @@ class InMemoryTaskManagerTest {
     @Test
     void fieldEpicNotChange() {
         taskManager.createEpic(epic1);
+
         Epic checkCreateRight = taskManager.getEpicList().get(0);
 
         assertEquals("NameEpic1", checkCreateRight.getName(), "Название задачи не " +
@@ -98,7 +100,7 @@ class InMemoryTaskManagerTest {
     @Test
     void createNewSubtaskAndGetById() {
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
+        taskManager.createSubtask(subtask1);
 
         final int subtaskId = subtask1.getId();
         final Subtask savedSubtask = taskManager.getByIdSubtask(subtaskId);
@@ -116,7 +118,8 @@ class InMemoryTaskManagerTest {
     @Test
     void fieldSubtaskNotChange() {
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
+        taskManager.createSubtask(subtask1);
+
         Subtask checkCreateRight = taskManager.getSubtaskList().get(0);
 
         assertEquals("NameSubtask1", checkCreateRight.getName(), "Название задачи не " +
@@ -129,11 +132,13 @@ class InMemoryTaskManagerTest {
     @Test
     void testGetTaskList() {
         List<Task> tasks = taskManager.getTaskList();
+
         assertNotNull(tasks, "Список задач не должен быть null");
         assertTrue(tasks.isEmpty(), "Список задач должен быть пуст");
 
         taskManager.createTask(task1);
         taskManager.createTask(task2);
+
         tasks = taskManager.getTaskList();
 
         assertNotNull(tasks, "Список задач не должен быть null.");
@@ -144,11 +149,13 @@ class InMemoryTaskManagerTest {
     @Test
     void testGetEpicList() {
         List<Epic> epics = taskManager.getEpicList();
+
         assertNotNull(epics, "Список задач не должен быть null");
         assertTrue(epics.isEmpty(), "Список задач должен быть пуст");
 
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
+
         epics = taskManager.getEpicList();
 
         assertNotNull(epics, "Список задач не должен быть null.");
@@ -159,13 +166,14 @@ class InMemoryTaskManagerTest {
     @Test
     void testGetSubtaskList() {
         List<Subtask> subtasks = taskManager.getSubtaskList();
+
         assertNotNull(subtasks, "Список задач не должен быть null");
         assertTrue(subtasks.isEmpty(), "Список задач должен быть пуст");
 
         Subtask subtask2 = new Subtask("NameEpic2", "DescriptionEpic2", epic1);
-
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask2, epic1.getId());
+        taskManager.createSubtask(subtask2);
+
         subtasks = taskManager.getSubtaskList();
 
         assertNotNull(subtasks, "Список задач не должен быть null.");
@@ -189,6 +197,7 @@ class InMemoryTaskManagerTest {
         task1.setStatus(Status.IN_PROGRESS);
         task1.setName("UpdateTask");
         task1.setDescription("UpdateDescription");
+
         taskManager.updateTask(task1);
 
         assertNotNull(task1, "Задача должна существовать после обновления");
@@ -203,6 +212,7 @@ class InMemoryTaskManagerTest {
         epic1.setStatus(Status.IN_PROGRESS);
         epic1.setName("UpdateEpic");
         epic1.setDescription("UpdateDescription");
+
         taskManager.updateEpic(epic1);
 
         assertNotNull(epic1, "Задача должна существовать после обновления");
@@ -214,10 +224,11 @@ class InMemoryTaskManagerTest {
     @Test
     void testUpdateSubtask() {
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
+        taskManager.createSubtask(subtask1);
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask1.setName("UpdateSubtask");
         subtask1.setDescription("UpdateDescription");
+
         taskManager.updateSubtask(subtask1);
 
         assertNotNull(subtask1, "Задача должна существовать после обновления");
@@ -229,12 +240,12 @@ class InMemoryTaskManagerTest {
     @Test
     void updateEpicStatusIfAllSubtasksNEW() {
         Subtask subtask2 = new Subtask("NameSubtask2", "DescriptionSubtask2", epic1);
-
         subtask1.setStatus(Status.NEW);
         subtask2.setStatus(Status.NEW);
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
-        taskManager.createSubtask(subtask2, epic1.getId());
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+
         taskManager.updateEpic(epic1);
 
         assertEquals(Status.NEW, epic1.getStatus(), "Статус эпика должен быть NEW, " +
@@ -244,13 +255,13 @@ class InMemoryTaskManagerTest {
     @Test
     void updateEpicStatusIfAllSubtasksDONE() {
         Subtask subtask2 = new Subtask("NameSubtask2", "DescriptionSubtask2", epic1);
-
         subtask1.setStatus(Status.DONE);
         subtask2.setStatus(Status.DONE);
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
-        taskManager.createSubtask(subtask2, epic1.getId());
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+
         taskManager.updateEpic(epic1);
 
         assertEquals(Status.DONE, epic1.getStatus(), "Статус эпика должен быть DONE, " +
@@ -260,12 +271,12 @@ class InMemoryTaskManagerTest {
     @Test
     void updateEpicStatusIfAllSubtasksIN_PROGRESS() {
         Subtask subtask2 = new Subtask("NameSubtask2", "DescriptionSubtask2", epic1);
-
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask2.setStatus(Status.IN_PROGRESS);
         taskManager.createEpic(epic1);
-        taskManager.createSubtask(subtask1, epic1.getId());
-        taskManager.createSubtask(subtask2, epic1.getId());
+        taskManager.createSubtask(subtask1);
+        taskManager.createSubtask(subtask2);
+
         taskManager.updateEpic(epic1);
 
         assertEquals(Status.IN_PROGRESS, epic1.getStatus(), "Статус эпика должен быть IN_PROGRESS, " +
@@ -279,8 +290,9 @@ class InMemoryTaskManagerTest {
 
         inMemoryTaskManager.createEpic(epic1);
         inMemoryTaskManager.createEpic(epic1);
-        inMemoryTaskManager.createSubtask(subtask1, epic1.getId());
-        inMemoryTaskManager.createSubtask(subtask2, epic1.getId());
+        inMemoryTaskManager.createSubtask(subtask1);
+        inMemoryTaskManager.createSubtask(subtask2);
+
         List<Subtask> subtaskFromEpic = inMemoryTaskManager.getSubtaskFromEpic(epic1.getId());
 
         assertNotNull(subtaskFromEpic, "Список не должен быть пустым");

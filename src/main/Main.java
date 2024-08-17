@@ -1,8 +1,8 @@
 package main;
 
 import manager.InMemoryTaskManager;
-import tasks.Epic;
 import status.Status;
+import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
@@ -66,9 +66,9 @@ public class Main {
         Subtask subtask2 = new Subtask("Subtask_2", "Reserve", epic4);
 
         System.out.println("Создание подзадачи subtask1");
-        System.out.println(inMemoryTaskManager.createSubtask(subtask1, 3));
+        System.out.println(inMemoryTaskManager.createSubtask(subtask1));
         System.out.println("Создание подзадачи subtask2");
-        System.out.println(inMemoryTaskManager.createSubtask(subtask2, 3));
+        System.out.println(inMemoryTaskManager.createSubtask(subtask2));
 
         subtask1.setStatus(Status.IN_PROGRESS);
         subtask2.setStatus(Status.IN_PROGRESS);
@@ -104,7 +104,7 @@ public class Main {
         //System.out.println(taskManager.getSubtaskFromEpic(3));
 
         //................Проверка истории..............
-       //открываем задачи
+        //открываем задачи
         System.out.println("-------------------------------------------------------------------");
         inMemoryTaskManager.getByIdTask(1);
         inMemoryTaskManager.getByIdTask(2);
@@ -119,13 +119,13 @@ public class Main {
         inMemoryTaskManager.getByIdSubtask(5);
         inMemoryTaskManager.getByIdSubtask(6);
 
-        //inMemoryTaskManager.getHistory();
+        inMemoryTaskManager.getHistory();
 
 
-        InMemoryTaskManager inMemoryTaskManager1 = new InMemoryTaskManager();
-        Epic epic5 = new Epic("NameEpic1", "DescriptionEpic1");
-        epic5.setId(4);
-        Subtask subtask5 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic5);
-        inMemoryTaskManager1.createSubtask(subtask5, 4);
+//        InMemoryTaskManager inMemoryTaskManager1 = new InMemoryTaskManager();
+//        Epic epic5 = new Epic("NameEpic1", "DescriptionEpic1");
+//        epic5.setId(4);
+//        Subtask subtask5 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic5);
+//        inMemoryTaskManager1.createSubtask(subtask5, 4);
     }
 }

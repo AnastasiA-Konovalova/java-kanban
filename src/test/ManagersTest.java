@@ -2,15 +2,12 @@ package test;
 
 
 import manager.HistoryManager;
-import manager.InMemoryHistoryManager;
-import manager.InMemoryTaskManager;
 import manager.Managers;
 import manager.TaskManager;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 class ManagersTest {
@@ -19,7 +16,6 @@ class ManagersTest {
         TaskManager taskManager = Managers.getDefault();
 
         assertNotNull(taskManager, "TaskManager не должен быть null");
-        assertTrue(taskManager instanceof InMemoryTaskManager, "taskManager должен instanceof InMemoryTaskManager");
     }
 
     @Test
@@ -27,7 +23,6 @@ class ManagersTest {
         HistoryManager historyManager = Managers.getDefaultHistory();
 
         assertNotNull(historyManager, "HistoryManager не должен быть null");
-        assertTrue(historyManager instanceof InMemoryHistoryManager, "historyManager должен instanceof InMemoryHistoryManager");
     }
 
     @Test

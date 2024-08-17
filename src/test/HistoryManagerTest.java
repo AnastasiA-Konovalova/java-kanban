@@ -20,9 +20,7 @@ class HistoryManagerTest {
         Task task1 = new Task("NameTask1", "DescriptionTask1");
         Epic epic1 = new Epic("NameEpic1", "DescriptionEpic1");
         taskManager.createTask(task1);
-
         taskManager.createEpic(epic1);
-
         historyManager.add(task1);
         historyManager.add(epic1);
 

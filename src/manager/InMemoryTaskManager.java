@@ -15,9 +15,9 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> taskMap;
     private Map<Integer, Epic> epicMap;
     private Map<Integer, Subtask> subtaskMap;
-    HistoryManager historyManager; //InMemoryTaskManager обращается к менеджеру истории через интерфейс HistoryManager
-
+    private HistoryManager historyManager; //InMemoryTaskManager обращается к менеджеру истории через интерфейс HistoryManager
     // и использует реализацию, которую возвращает метод getDefaultHistory.
+
     public InMemoryTaskManager() {
         this.taskMap = new HashMap<>();
         this.epicMap = new HashMap<>();
@@ -31,9 +31,6 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Список просмотренных задач пуст");
             return List.of();
         } else {
-            while (historyManager.getHistory().size() > 10) {
-                historyManager.getHistory().remove(0);
-            }
             System.out.println("Список просмотренных задач");
             for (Task tasks : historyManager.getHistory()) {
                 System.out.println("Задача " + tasks);
@@ -58,18 +55,22 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask createSubtask(Subtask subtask, Integer epicId) {
-        if (!epicMap.containsKey(epicId)) {
-            System.out.println("Такой id в epic отсутствует.");
-        } else {
-            subtask.setId(id++);
-            subtaskMap.put(subtask.getId(), subtask);
-            Epic epic = epicMap.get(epicId);
-            epic.addSubtask(subtask);
-
-            updateEpicStatus(epic);
-            subtask.setEpic(epic);
+    public Subtask createSubtask(Subtask subtask) {
+        if (subtask == null) {
+            System.out.println("В качестве subtask передан null.");
+            return null;
         }
+        Epic epic = subtask.getEpic();
+        if (epic == null || !epicMap.containsKey(epic.getId())) {
+            System.out.println("Такой epic не существует.");
+        }
+        subtask.setId(id++);
+        subtaskMap.put(subtask.getId(), subtask);
+        epic.addSubtask(subtask);
+
+        updateEpicStatus(epic);
+        subtask.setEpic(epic);
+
         return subtask;
     }
 
@@ -88,8 +89,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Epic> getEpicList() {
         if (!epicMap.isEmpty()) {
             System.out.println("Список задач категории epic.");
-            List<Epic> a = new ArrayList<>(epicMap.values());
-            System.out.println(a);
             return new ArrayList<>(epicMap.values());
         } else {
             System.out.println("Список пуст");
@@ -133,21 +132,21 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Task getByIdTask(Integer id) {
         System.out.println("Задача c id " + id + ".");
-        historyManager.getHistory().add(taskMap.get(id));
+        historyManager.add(taskMap.get(id));
         return taskMap.get(id);
     }
 
     @Override
     public Epic getByIdEpic(Integer id) {
         System.out.println("tasks.Epic-задача с id " + id + ".");
-        historyManager.getHistory().add(epicMap.get(id));
+        historyManager.add(epicMap.get(id));
         return epicMap.get(id);
     }
 
     @Override
     public Subtask getByIdSubtask(Integer id) {
         System.out.println("Подзадача " + id + ".");
-        historyManager.getHistory().add(subtaskMap.get(id));
+        historyManager.add(subtaskMap.get(id));
         return subtaskMap.get(id);
     }
 
@@ -244,6 +243,7 @@ public class InMemoryTaskManager implements TaskManager {
         System.out.println("Подзадача удалена.");
     }
 
+    @Override
     public List<Subtask> getSubtaskFromEpic(Integer epicId) {
         Epic epic = epicMap.get(epicId);
 
