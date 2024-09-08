@@ -15,8 +15,7 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> taskMap;
     private Map<Integer, Epic> epicMap;
     private Map<Integer, Subtask> subtaskMap;
-    private HistoryManager historyManager; //InMemoryTaskManager обращается к менеджеру истории через интерфейс HistoryManager
-    // и использует реализацию, которую возвращает метод getDefaultHistory.
+    private HistoryManager historyManager;
 
     public InMemoryTaskManager() {
         this.taskMap = new HashMap<>();
@@ -27,14 +26,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public List<Task> getHistory() {
-        if (historyManager.getHistory().isEmpty()) {
-            System.out.println("Список просмотренных задач пуст");
-            return List.of();
-        } else {
-            System.out.println("Список просмотренных задач");
-            for (Task tasks : historyManager.getHistory()) {
-                System.out.println("Задача " + tasks);
-            }
+        System.out.println("Список просмотренных задач");
+        for (Task tasks : historyManager.getHistory()) {
+            System.out.println("Задача " + tasks);
         }
         return historyManager.getHistory();
     }
@@ -109,12 +103,24 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
+        List<Integer> taskId = new ArrayList<>(taskMap.keySet());
+        for (Integer integerId : taskId) {
+            historyManager.remove(integerId);
+        }
         taskMap.clear();
         System.out.println("Задачи удалены.");
     }
 
     @Override
     public void deleteAllEpics() {
+        List<Integer> epicId = new ArrayList<>(epicMap.keySet());
+        for (Integer integerId : epicId) {
+            historyManager.remove(integerId);
+        }
+        List<Integer> subtaskId = new ArrayList<>(subtaskMap.keySet());
+        for (Integer integerId : subtaskId) {
+            historyManager.remove(integerId);
+        }
         epicMap.clear();
         subtaskMap.clear();
         System.out.println("tasks.Epic-задачи удалены.");
@@ -122,6 +128,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubtasks() {
+        List<Integer> taskId = new ArrayList<>(subtaskMap.keySet());
+        for (Integer integerId : taskId) {
+            historyManager.remove(integerId);
+        }
         subtaskMap.clear();
         for (Epic epic : epicMap.values()) {
             epic.deleteAllSubtasks();
@@ -209,6 +219,7 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("Такого id нет");
             return;
         }
+        historyManager.remove(id);
         taskMap.remove(id);
         System.out.println("Задача с id " + id + " удалена.");
     }
@@ -225,7 +236,7 @@ public class InMemoryTaskManager implements TaskManager {
         for (Integer subtask : subtasks) {
             subtaskMap.remove(subtask);
         }
-
+        historyManager.remove(id);
         System.out.println("tasks.Epic-задача с id " + id + " удалена.");
     }
 
@@ -240,6 +251,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.deleteSubtaskById(remove);
 
         updateEpicStatus(epic);
+        historyManager.remove(id);
         System.out.println("Подзадача удалена.");
     }
 
@@ -251,6 +263,7 @@ public class InMemoryTaskManager implements TaskManager {
             return List.of();
         }
         List<Subtask> idSubtasksList = new ArrayList<>();
+
         for (Integer idSubtask : epic.getSubtasks()) {
             Subtask subtask = subtaskMap.get(idSubtask);
             if (subtask != null) {
