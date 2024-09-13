@@ -235,8 +235,10 @@ public class InMemoryTaskManager implements TaskManager {
 
         for (Integer subtask : subtasks) {
             subtaskMap.remove(subtask);
+            historyManager.remove(subtask);
         }
         historyManager.remove(id);
+
         System.out.println("tasks.Epic-задача с id " + id + " удалена.");
     }
 

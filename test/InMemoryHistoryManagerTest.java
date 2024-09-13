@@ -1,5 +1,3 @@
-package test;
-
 import manager.HistoryManager;
 import manager.InMemoryHistoryManager;
 import manager.Managers;
@@ -14,6 +12,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class InMemoryHistoryManagerTest {
@@ -44,6 +43,21 @@ class InMemoryHistoryManagerTest {
 
         assertNotNull(history, "История не пустая.");
         assertEquals(1, history.size(), "Размер списка верный.");
+    }
+
+    @Test
+    void testAddTasksInHistoryTwice() {
+        task1.setId(1);
+        task2.setId(task1.getId());
+
+        historyManager.add(task1);
+        historyManager.add(task2);
+        List<Task> history = historyManager.getHistory();
+
+        assertNotNull(history, "История не пустая.");
+        assertSame(history.get(0), task2);
+        assertEquals(1, history.size());
+        assertTrue(history.contains(task2));
     }
 
     @Test
@@ -96,11 +110,11 @@ class InMemoryHistoryManagerTest {
     void testLinkAddLastNotNull() {
         inMemoryHistoryManager.linkAddLast(task1);
 
-        assertNotNull(inMemoryHistoryManager.head);
-        assertNotNull(inMemoryHistoryManager.tail);
-        assertEquals(task1, inMemoryHistoryManager.head.data);
-        assertEquals(task1, inMemoryHistoryManager.tail.data);
-        assertTrue(inMemoryHistoryManager.mapOfTasks.containsKey(task1.getId()));
+        assertNotNull(inMemoryHistoryManager.getHead());
+        assertNotNull(inMemoryHistoryManager.getTail());
+        assertEquals(task1, inMemoryHistoryManager.getHead().data);
+        assertEquals(task1, inMemoryHistoryManager.getTail().data);
+        assertTrue(inMemoryHistoryManager.getMapOfTasks().containsKey(task1.getId()));
     }
 
     @Test
@@ -108,10 +122,10 @@ class InMemoryHistoryManagerTest {
         inMemoryHistoryManager.linkAddLast(task1);
         inMemoryHistoryManager.linkAddLast(task2);
 
-        assertEquals(task2, inMemoryHistoryManager.head.next.data);
-        assertNull(inMemoryHistoryManager.head.prev);
-        assertEquals(task1, inMemoryHistoryManager.head.data);
-        assertNull(inMemoryHistoryManager.tail.next);
+        assertEquals(task2, inMemoryHistoryManager.getHead().next.data);
+        assertNull(inMemoryHistoryManager.getHead().prev);
+        assertEquals(task1, inMemoryHistoryManager.getHead().data);
+        assertNull(inMemoryHistoryManager.getTail().next);
     }
 
     @Test
@@ -127,9 +141,9 @@ class InMemoryHistoryManagerTest {
 
         inMemoryHistoryManager.remove(task1.getId());
 
-        assertEquals(task2, inMemoryHistoryManager.head.data);
-        assertEquals(subtask1, inMemoryHistoryManager.tail.data);
-        assertEquals(3, inMemoryHistoryManager.mapOfTasks.size());
+        assertEquals(task2, inMemoryHistoryManager.getHead().data);
+        assertEquals(subtask1, inMemoryHistoryManager.getTail().data);
+        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -145,9 +159,9 @@ class InMemoryHistoryManagerTest {
 
         inMemoryHistoryManager.remove(subtask1.getId());
 
-        assertEquals(epic1, inMemoryHistoryManager.tail.data);
-        assertEquals(task1, inMemoryHistoryManager.head.data);
-        assertEquals(3, inMemoryHistoryManager.mapOfTasks.size());
+        assertEquals(epic1, inMemoryHistoryManager.getTail().data);
+        assertEquals(task1, inMemoryHistoryManager.getHead().data);
+        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -163,9 +177,9 @@ class InMemoryHistoryManagerTest {
 
         inMemoryHistoryManager.remove(epic1.getId());
 
-        assertEquals(task1, inMemoryHistoryManager.head.data);
-        assertEquals(subtask1, inMemoryHistoryManager.tail.data);
-        assertEquals(3, inMemoryHistoryManager.mapOfTasks.size());
+        assertEquals(task1, inMemoryHistoryManager.getHead().data);
+        assertEquals(subtask1, inMemoryHistoryManager.getTail().data);
+        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -175,9 +189,9 @@ class InMemoryHistoryManagerTest {
 
         inMemoryHistoryManager.remove(task1.getId());
 
-        assertNull(inMemoryHistoryManager.head);
-        assertNull(inMemoryHistoryManager.tail);
-        assertEquals(0, inMemoryHistoryManager.mapOfTasks.size());
+        assertNull(inMemoryHistoryManager.getHead());
+        assertNull(inMemoryHistoryManager.getTail());
+        assertEquals(0, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test

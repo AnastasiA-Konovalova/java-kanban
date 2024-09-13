@@ -5,15 +5,26 @@ import tasks.Task;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InMemoryHistoryManager implements HistoryManager {
-    private List<Task> historyList;
-    public Node head;
-    public Node tail;
-    public HashMap<Integer, Node> mapOfTasks = new HashMap<>();
+    private Node head;
+    private Node tail;
+    private Map<Integer, Node> mapOfTasks = new HashMap<>();
 
     public InMemoryHistoryManager() {
-        this.historyList = new ArrayList<>();
+    }
+
+    public Node getHead() {
+        return head;
+    }
+
+    public Node getTail() {
+        return tail;
+    }
+
+    public Map<Integer, Node> getMapOfTasks() {
+        return mapOfTasks;
     }
 
     @Override
@@ -22,8 +33,9 @@ public class InMemoryHistoryManager implements HistoryManager {
             return;
         }
         if (mapOfTasks.containsKey(task.getId())) {
+            Node node = mapOfTasks.get(task.getId());
+            removeNode(node);
             mapOfTasks.remove(task.getId());
-            removeNode(new Node(task));
         }
         linkAddLast(task);
     }
