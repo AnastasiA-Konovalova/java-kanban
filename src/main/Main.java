@@ -1,5 +1,6 @@
 package main;
 
+import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
 import status.Status;
 import tasks.Epic;
@@ -106,26 +107,69 @@ public class Main {
         //................Проверка истории..............
         //открываем задачи
         System.out.println("-------------------------------------------------------------------");
-        inMemoryTaskManager.getByIdTask(1);
-        inMemoryTaskManager.getByIdTask(2);
-        inMemoryTaskManager.getByIdEpic(3);
-        inMemoryTaskManager.getByIdEpic(4);
-        inMemoryTaskManager.getByIdSubtask(5);
-        inMemoryTaskManager.getByIdSubtask(6);
-        inMemoryTaskManager.getByIdTask(1);
-        inMemoryTaskManager.getByIdTask(2);
-        inMemoryTaskManager.getByIdEpic(3);
-        inMemoryTaskManager.getByIdEpic(4);
-        inMemoryTaskManager.getByIdSubtask(5);
-        inMemoryTaskManager.getByIdSubtask(6);
+//        inMemoryTaskManager.getByIdTask(1);
+//        inMemoryTaskManager.getByIdTask(2);
+//        inMemoryTaskManager.getByIdEpic(3);
+//        inMemoryTaskManager.getByIdEpic(4);
+//        inMemoryTaskManager.getByIdSubtask(5);
+//        inMemoryTaskManager.getByIdSubtask(6);
+//        inMemoryTaskManager.getByIdTask(1);
+//        inMemoryTaskManager.getByIdTask(2);
+//        inMemoryTaskManager.getByIdEpic(3);
+//        inMemoryTaskManager.getByIdEpic(4);
+//        inMemoryTaskManager.getByIdSubtask(5);
+//        inMemoryTaskManager.getByIdSubtask(6);
 
-        inMemoryTaskManager.getHistory();
+        //inMemoryTaskManager.getHistory();
 
 
+
+        InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
+
+//        historyManager.add(epic1);
+//        historyManager.add(epic2);
+//        historyManager.add(epic2);
+//        historyManager.add(task1);
+//        historyManager.add(task2);
+//        historyManager.add(task2);
+//        historyManager.linkAddLast(subtask1);
+//        historyManager.linkAddLast(subtask2);
+//        historyManager.linkAddLast(epic1);
+//        historyManager.linkAddLast(task1);
+        //System.out.println(historyManager.getTasks());
+//        System.out.println("History1" + inMemoryTaskManager.getHistory());
+//        inMemoryTaskManager.deleteAllTasks();
+//        //inMemoryTaskManager.deleteTaskById(task1.getId());
+//        System.out.println("History2" + inMemoryTaskManager.getHistory());
+//        List<Task> history = inMemoryTaskManager.getHistory();
+//        System.out.println(history.size());
+////просмотренные задачи (удаление всех)
+//        //inMemoryTaskManager.deleteAllTasks();
+//        System.out.println(inMemoryTaskManager.getTaskList());
+//        inMemoryTaskManager.getHistory();
+
+//        inMemoryTaskManager.deleteAllEpics();
+//        System.out.println(inMemoryTaskManager.getEpicList());
+//        inMemoryTaskManager.getHistory();
+
+        //inMemoryTaskManager.deleteAllSubtasks();
+//        System.out.println(inMemoryTaskManager.getSubtaskList());
+//        inMemoryTaskManager.getHistory();
+//
+//        inMemoryTaskManager.deleteEpicById(4);
+//        System.out.println(inMemoryTaskManager.getHistory());
+
+        //historyManager.removeNode();
 //        InMemoryTaskManager inMemoryTaskManager1 = new InMemoryTaskManager();
 //        Epic epic5 = new Epic("NameEpic1", "DescriptionEpic1");
 //        epic5.setId(4);
 //        Subtask subtask5 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic5);
 //        inMemoryTaskManager1.createSubtask(subtask5, 4);
+
+        task1.setId(1);
+        task2.setId(task1.getId());
+        historyManager.add(task1);
+        historyManager.add(task2);
+        System.out.println(historyManager.getHistory());
     }
 }

@@ -1,5 +1,3 @@
-package test;
-
 import manager.InMemoryTaskManager;
 import manager.Managers;
 import manager.TaskManager;
@@ -34,7 +32,6 @@ class InMemoryTaskManagerTest {
         epic1 = new Epic("NameEpic1", "DescriptionEpic1");
         epic2 = new Epic("NameEpic2", "DescriptionEpic2");
         subtask1 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic1);
-
     }
 
     @Test
@@ -298,5 +295,58 @@ class InMemoryTaskManagerTest {
         assertNotNull(subtaskFromEpic, "Список не должен быть пустым");
         assertEquals(subtask1, subtaskFromEpic.get(0), "Лист не содержит subtask1");
         assertEquals(subtask2, subtaskFromEpic.get(1), "Лист не содержит subtask2");
+    }
+
+    @Test
+    void testEpicShouldNotContainRelevantSubtasksAfterRemove() {
+        taskManager.deleteEpicById(epic1.getId());
+
+        assertEquals(0, taskManager.getEpicList().size(), "Список epic пуст");
+        assertEquals(0, taskManager.getSubtaskList().size(), "Список subtask пуст");
+        System.out.println(subtask1);
+    }
+
+    @Test
+    void testChangeTheFieldNameUsingSet() {
+        task1.setName("SetNameTask1");
+        epic1.setName("SetNameEpic1");
+        subtask1.setName("SetNameSubtask1");
+
+        assertEquals("SetNameTask1", task1.getName());
+        assertEquals("SetNameEpic1", epic1.getName());
+        assertEquals("SetNameSubtask1", subtask1.getName());
+    }
+
+    @Test
+    void testChangeTheFieldDescriptionUsingSet() {
+        task1.setDescription("SetDescriptionTask1");
+        epic1.setDescription("SetDescriptionEpic1");
+        subtask1.setDescription("SetDescriptionSubtask1");
+
+        assertEquals("SetDescriptionTask1", task1.getDescription());
+        assertEquals("SetDescriptionEpic1", epic1.getDescription());
+        assertEquals("SetDescriptionSubtask1", subtask1.getDescription());
+    }
+
+    @Test
+    void testChangeTheFieldStatusUsingSet() {
+        task1.setStatus(Status.NEW);
+        epic1.setStatus(Status.IN_PROGRESS);
+        subtask1.setStatus(Status.DONE);
+
+        assertEquals(Status.NEW, task1.getStatus());
+        assertEquals(Status.IN_PROGRESS, epic1.getStatus());
+        assertEquals(Status.DONE, subtask1.getStatus());
+    }
+
+    @Test
+    void testChangeTheFieldIdUsingSet() {
+        task1.setId(1);
+        epic1.setId(4);
+        subtask1.setId(9);
+
+        assertEquals(1, task1.getId());
+        assertEquals(4, epic1.getId());
+        assertEquals(9, subtask1.getId());
     }
 }
