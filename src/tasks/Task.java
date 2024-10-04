@@ -14,7 +14,9 @@ public class Task {
         this.status = Status.NEW;
     }
 
-    public Task() {}
+    public Task() {
+
+    }
 
     public String getName() {
         return name;
