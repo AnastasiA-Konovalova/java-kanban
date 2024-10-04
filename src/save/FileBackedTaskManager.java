@@ -1,9 +1,9 @@
-package saveTasks;
+package save;
 
 import exeption.ManagerSaveException;
 import manager.InMemoryTaskManager;
 import status.Status;
-import taskType.TaskType;
+import tasktype.TaskType;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
