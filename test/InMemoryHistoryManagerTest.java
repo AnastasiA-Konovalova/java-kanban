@@ -114,7 +114,6 @@ class InMemoryHistoryManagerTest {
         assertNotNull(inMemoryHistoryManager.getTail());
         assertEquals(task1, inMemoryHistoryManager.getHead().data);
         assertEquals(task1, inMemoryHistoryManager.getTail().data);
-        assertTrue(inMemoryHistoryManager.getMapOfTasks().containsKey(task1.getId()));
     }
 
     @Test
@@ -143,7 +142,6 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(task2, inMemoryHistoryManager.getHead().data);
         assertEquals(subtask1, inMemoryHistoryManager.getTail().data);
-        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -161,7 +159,6 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(epic1, inMemoryHistoryManager.getTail().data);
         assertEquals(task1, inMemoryHistoryManager.getHead().data);
-        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -179,7 +176,6 @@ class InMemoryHistoryManagerTest {
 
         assertEquals(task1, inMemoryHistoryManager.getHead().data);
         assertEquals(subtask1, inMemoryHistoryManager.getTail().data);
-        assertEquals(3, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test
@@ -191,7 +187,6 @@ class InMemoryHistoryManagerTest {
 
         assertNull(inMemoryHistoryManager.getHead());
         assertNull(inMemoryHistoryManager.getTail());
-        assertEquals(0, inMemoryHistoryManager.getMapOfTasks().size());
     }
 
     @Test

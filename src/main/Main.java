@@ -2,18 +2,25 @@ package main;
 
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
+import saveTasks.FileBackedTaskManager;
 import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         System.out.println("Поехали!");
         //инициализация объекта
-        InMemoryTaskManager inMemoryTaskManager = new InMemoryTaskManager();
+        Path path = Path.of("saveTasksInfo.csv");
+        InMemoryTaskManager inMemoryTaskManager = new FileBackedTaskManager(path);
 
         //tasks.Task
         Task task1 = new Task("Task_1", "Go away");
@@ -166,10 +173,15 @@ public class Main {
 //        Subtask subtask5 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic5);
 //        inMemoryTaskManager1.createSubtask(subtask5, 4);
 
-        task1.setId(1);
-        task2.setId(task1.getId());
-        historyManager.add(task1);
-        historyManager.add(task2);
-        System.out.println(historyManager.getHistory());
+        //task1.setId(1);
+//        task2.setId(task1.getId());
+//        historyManager.add(task1);
+//        historyManager.add(task2);
+//        System.out.println(historyManager.getHistory());
+
+        //Path path = Path.of("saveTasksInfo.csv");
+        //FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(path);
+        ((FileBackedTaskManager) inMemoryTaskManager).save();
+        FileBackedTaskManager.loadFromFile(path.toFile());
     }
 }
