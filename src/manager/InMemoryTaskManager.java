@@ -187,7 +187,7 @@ public class InMemoryTaskManager implements TaskManager {
         updateEpicStatus(subtask.getEpic());
     }
 
-    private void updateEpicStatus(Epic epic) {
+    public void updateEpicStatus(Epic epic) {
         List<Integer> subtasks = epic.getSubtasks();
         if (subtasks.isEmpty()) {
             epic.setStatus(Status.NEW);
