@@ -15,12 +15,12 @@ class HistoryManagerTest {
     void saveOldTask() {
         HistoryManager historyManager = Managers.getDefaultHistory();
         TaskManager taskManager = Managers.getDefault();
-        Task task1 = new Task("NameTask1", "DescriptionTask1");
-        Epic epic1 = new Epic("NameEpic1", "DescriptionEpic1");
-        taskManager.createTask(task1);
-        taskManager.createEpic(epic1);
-        historyManager.add(task1);
-        historyManager.add(epic1);
+        Task task_1 = new Task("NameTask_1", "DescriptionTask_1");
+        Epic epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
+        taskManager.createTask(task_1);
+        taskManager.createEpic(epic_1);
+        historyManager.add(task_1);
+        historyManager.add(epic_1);
 
         List<Task> history = historyManager.getHistory();
 

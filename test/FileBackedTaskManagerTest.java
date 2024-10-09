@@ -10,27 +10,28 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FileBackedTaskManagerTest {
-    private Task task1;
-    private Task task2;
-    private Epic epic1;
-    private Epic epic2;
-    private Subtask subtask1;
-    private Subtask subtask2;
+    private Task task_1;
+    private Task task_2;
+    private Epic epic_1;
+    private Epic epic_2;
+    private Subtask subtask_1;
+    private Subtask subtask_2;
 
     @BeforeEach
     void setUp() {
-        task1 = new Task("NameTask1", "DescriptionTask1");
-        task2 = new Task("NameTask2", "DescriptionTask2");
-        epic1 = new Epic("NameEpic1", "DescriptionEpic1");
-        epic2 = new Epic("NameEpic2", "DescriptionEpic2");
-        subtask1 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic1);
-        subtask2 = new Subtask("NameSubtask2", "DescriptionSubtask2", epic1);
+        task_1 = new Task("NameTask_1", "DescriptionTask_1");
+        task_2 = new Task("NameTask_2", "DescriptionTask_2");
+        epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
+        epic_2 = new Epic("NameEpic_2", "DescriptionEpic_2");
+        subtask_1 = new Subtask("NameSubtask_1", "DescriptionSubtask_1", epic_1);
+        subtask_2 = new Subtask("NameSubtask_2", "DescriptionSubtask_2", epic_1);
     }
 
     @Test
@@ -39,21 +40,40 @@ class FileBackedTaskManagerTest {
         Writer fileWriter = new FileWriter(tmpFile);
         fileWriter.write("""
                 id,type,name,status,description,epic
-                1,Task,Task_1,NEW,Go away
-                2,Task,Task_2,IN_PROGRESS,Cook
-                3,Task,Task_3,IN_PROGRESS,Read""");
+                100,Task,Task_1,NEW,DescriptionTask_1
+                6,Task,Task_2,IN_PROGRESS,DescriptionTask_2
+                4,Task,Task_3,IN_PROGRESS,DescriptionTask_3""");
         fileWriter.flush();
-        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
-        List<Task> taskList1 = actualFileManager.getTaskList();
 
-        assertEquals(3, taskList1.size());
-        assertEquals(1, taskList1.get(0).getId());
-        assertEquals(Task.class, taskList1.get(0).getClass());
-        assertEquals("Task_3", taskList1.get(2).getName());
-        assertEquals(Status.IN_PROGRESS, taskList1.get(1).getStatus());
-        assertEquals(Status.IN_PROGRESS, taskList1.get(2).getStatus());
-        assertEquals("Cook", taskList1.get(1).getDescription());
-        assertEquals("Read", taskList1.get(2).getDescription());
+        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
+        actualFileManager.createTask(new Task("Task_4", "DescriptionTask_4"));
+        List<Task> taskList = actualFileManager.getTaskList();
+        taskList.sort(Comparator.comparingInt(Task::getId));
+
+        assertEquals(4, taskList.size());
+        assertEquals(4, taskList.get(0).getId());
+        assertEquals(Task.class, taskList.get(0).getClass());
+        assertEquals("Task_3", taskList.get(0).getName());
+        assertEquals(Status.IN_PROGRESS, taskList.get(0).getStatus());
+        assertEquals("DescriptionTask_3", taskList.get(0).getDescription());
+
+        assertEquals(6, taskList.get(1).getId());
+        assertEquals(Task.class, taskList.get(1).getClass());
+        assertEquals("Task_2", taskList.get(1).getName());
+        assertEquals(Status.IN_PROGRESS, taskList.get(1).getStatus());
+        assertEquals("DescriptionTask_2", taskList.get(1).getDescription());
+
+        assertEquals(100, taskList.get(2).getId());
+        assertEquals(Task.class, taskList.get(2).getClass());
+        assertEquals("Task_1", taskList.get(2).getName());
+        assertEquals(Status.NEW, taskList.get(2).getStatus());
+        assertEquals("DescriptionTask_1", taskList.get(2).getDescription());
+
+        assertEquals(101, taskList.get(3).getId());
+        assertEquals(Task.class, taskList.get(3).getClass());
+        assertEquals("Task_4", taskList.get(3).getName());
+        assertEquals(Status.NEW, taskList.get(3).getStatus());
+        assertEquals("DescriptionTask_4", taskList.get(3).getDescription());
     }
 
     @Test
@@ -62,21 +82,40 @@ class FileBackedTaskManagerTest {
         Writer fileWriter = new FileWriter(tmpFile);
         fileWriter.write("""
                 id,type,name,status,description,epic
-                1,Epic,Epic_1,IN_PROGRESS,Buy everything
-                2,Epic,Epic_2,IN_PROGRESS,Cut carrot
-                3,Epic,Epic_3,NEW,Wash onion""");
+                5,Epic,Epic_1,IN_PROGRESS,DescriptionEpic_1
+                4,Epic,Epic_2,IN_PROGRESS,DescriptionEpic_2
+                34,Epic,Epic_3,NEW,DescriptionEpic_3""");
         fileWriter.flush();
-        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
-        List<Epic> epicList1 = actualFileManager.getEpicList();
 
-        assertEquals(3, epicList1.size());
-        assertEquals(1, epicList1.get(0).getId());
-        assertEquals(Epic.class, epicList1.get(0).getClass());
-        assertEquals("Epic_2", epicList1.get(1).getName());
-        assertEquals(Status.IN_PROGRESS, epicList1.get(1).getStatus());
-        assertEquals(Status.NEW, epicList1.get(2).getStatus());
-        assertEquals("Cut carrot", epicList1.get(1).getDescription());
-        assertEquals("Wash onion", epicList1.get(2).getDescription());
+        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
+        actualFileManager.createEpic(new Epic("Epic_4", "DescriptionEpic_4"));
+        List<Epic> epicList = actualFileManager.getEpicList();
+        epicList.sort(Comparator.comparingInt(Epic::getId));
+
+        assertEquals(4, epicList.size());
+        assertEquals(4, epicList.get(0).getId());
+        assertEquals(Epic.class, epicList.get(0).getClass());
+        assertEquals("Epic_2", epicList.get(0).getName());
+        assertEquals(Status.IN_PROGRESS, epicList.get(0).getStatus());
+        assertEquals("DescriptionEpic_2", epicList.get(0).getDescription());
+
+        assertEquals(5, epicList.get(1).getId());
+        assertEquals(Epic.class, epicList.get(1).getClass());
+        assertEquals("Epic_1", epicList.get(1).getName());
+        assertEquals(Status.IN_PROGRESS, epicList.get(1).getStatus());
+        assertEquals("DescriptionEpic_1", epicList.get(1).getDescription());
+
+        assertEquals(34, epicList.get(2).getId());
+        assertEquals(Epic.class, epicList.get(2).getClass());
+        assertEquals("Epic_3", epicList.get(2).getName());
+        assertEquals(Status.NEW, epicList.get(2).getStatus());
+        assertEquals("DescriptionEpic_3", epicList.get(2).getDescription());
+
+        assertEquals(35, epicList.get(3).getId());
+        assertEquals(Epic.class, epicList.get(3).getClass());
+        assertEquals("Epic_4", epicList.get(3).getName());
+        assertEquals(Status.NEW, epicList.get(3).getStatus());
+        assertEquals("DescriptionEpic_4", epicList.get(3).getDescription());
     }
 
     @Test
@@ -85,35 +124,57 @@ class FileBackedTaskManagerTest {
         Writer fileWriter = new FileWriter(tmpFile);
         fileWriter.write("""
                 id,type,name,status,description,epic
-                1,Epic,Epic_1,NEW,Buy everything
-                2,Subtask,Subtask_1,IN_PROGRESS,Plane,1
-                3,Subtask,Subtask_2,IN_PROGRESS,Reserve,1
-                4,Subtask,Subtask_2,NEW,Sleep,1""");
+                1,Epic,Epic_1,NEW,DescriptionEpic_1
+                5,Subtask,Subtask_1,IN_PROGRESS,DescriptionSubtask_1,1
+                6,Subtask,Subtask_2,IN_PROGRESS,DescriptionSubtask_2,1
+                14,Subtask,Subtask_3,NEW,DescriptionSubtask_3,1""");
         fileWriter.flush();
-        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
-        List<Epic> epicList1 = actualFileManager.getEpicList();
-        List<Subtask> subtaskList = actualFileManager.getSubtaskList();
 
-        assertEquals(3, subtaskList.size());
-        assertEquals(2, subtaskList.get(0).getId());
+        FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
+        List<Epic> epicList = actualFileManager.getEpicList();
+        actualFileManager.createSubtask(new Subtask("Subtask_4", "DescriptionSubtask_4", epicList.get(0)));
+        List<Subtask> subtaskList = actualFileManager.getSubtaskList();
+        subtaskList.sort(Comparator.comparingInt(Subtask::getId));
+
+        assertEquals(4, subtaskList.size());
+        assertEquals(1, epicList.size());
+        assertEquals(5, subtaskList.get(0).getId());
+        assertEquals(Subtask.class, subtaskList.get(0).getClass());
+        assertEquals("Subtask_1", subtaskList.get(0).getName());
+        assertEquals(Status.IN_PROGRESS, subtaskList.get(0).getStatus());
+        assertEquals("DescriptionSubtask_1", subtaskList.get(0).getDescription());
+        assertEquals(1, subtaskList.get(0).getEpic().getId());
+
+        assertEquals(6, subtaskList.get(1).getId());
         assertEquals(Subtask.class, subtaskList.get(1).getClass());
         assertEquals("Subtask_2", subtaskList.get(1).getName());
         assertEquals(Status.IN_PROGRESS, subtaskList.get(1).getStatus());
+        assertEquals("DescriptionSubtask_2", subtaskList.get(1).getDescription());
+        assertEquals(1, subtaskList.get(1).getEpic().getId());
+
+        assertEquals(14, subtaskList.get(2).getId());
+        assertEquals(Subtask.class, subtaskList.get(2).getClass());
+        assertEquals("Subtask_3", subtaskList.get(2).getName());
         assertEquals(Status.NEW, subtaskList.get(2).getStatus());
-        assertEquals("Reserve", subtaskList.get(1).getDescription());
-        assertEquals("Sleep", subtaskList.get(2).getDescription());
-        assertEquals(3, epicList1.get(0).getSubtasks().size());
+        assertEquals("DescriptionSubtask_3", subtaskList.get(2).getDescription());
+        assertEquals(1, subtaskList.get(2).getEpic().getId());
+
+        assertEquals(15, subtaskList.get(3).getId());
+        assertEquals(Subtask.class, subtaskList.get(3).getClass());
+        assertEquals("Subtask_4", subtaskList.get(3).getName());
+        assertEquals(Status.NEW, subtaskList.get(3).getStatus());
+        assertEquals("DescriptionSubtask_4", subtaskList.get(3).getDescription());
+        assertEquals(1, subtaskList.get(3).getEpic().getId());
     }
 
     @Test
     public void testSaveAndLoadTasks() throws IOException {
         File tmpFile = File.createTempFile("data", null);
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tmpFile.toString());
-        fileBackedTaskManager.createTask(task1);
-        fileBackedTaskManager.createTask(task2);
+        fileBackedTaskManager.createTask(task_1);
+        fileBackedTaskManager.createTask(task_2);
 
         fileBackedTaskManager.save();
-
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Task> taskList1 = fileBackedTaskManager.getTaskList();
@@ -129,12 +190,10 @@ class FileBackedTaskManagerTest {
     public void testSaveAndLoadEpics() throws IOException {
         File tmpFile = File.createTempFile("data", null);
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tmpFile.toString());
-
-        fileBackedTaskManager.createEpic(epic1);
-        fileBackedTaskManager.createEpic(epic2);
+        fileBackedTaskManager.createEpic(epic_1);
+        fileBackedTaskManager.createEpic(epic_2);
 
         fileBackedTaskManager.save();
-
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Epic> epicList1 = fileBackedTaskManager.getEpicList();
@@ -150,12 +209,10 @@ class FileBackedTaskManagerTest {
     public void testSaveAndLoadSubtasks() throws IOException {
         File tmpFile = File.createTempFile("data", null);
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tmpFile.toString());
-
-        fileBackedTaskManager.createEpic(epic1);
-        fileBackedTaskManager.createSubtask(subtask1);
+        fileBackedTaskManager.createEpic(epic_1);
+        fileBackedTaskManager.createSubtask(subtask_1);
 
         fileBackedTaskManager.save();
-
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Subtask> subtaskList1 = fileBackedTaskManager.getSubtaskList();
@@ -163,7 +220,6 @@ class FileBackedTaskManagerTest {
 
         assertEquals(subtaskList1.size(), subtaskList2.size());
         assertEquals(subtaskList1.get(0).getEpic(), subtaskList2.get(0).getEpic());
-
         for (int i = 0; i < subtaskList1.size(); i++) {
             assertEquals(subtaskList1.get(i), subtaskList2.get(i));
         }
@@ -173,21 +229,19 @@ class FileBackedTaskManagerTest {
     public void testSubtasksInEpics() throws IOException {
         File tmpFile = File.createTempFile("data", null);
         FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tmpFile.toString());
-
-        fileBackedTaskManager.createEpic(epic1);
-        fileBackedTaskManager.createSubtask(subtask1);
-        fileBackedTaskManager.createSubtask(subtask2);
+        fileBackedTaskManager.createEpic(epic_1);
+        fileBackedTaskManager.createSubtask(subtask_1);
+        fileBackedTaskManager.createSubtask(subtask_2);
 
         fileBackedTaskManager.save();
-
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
-        Epic loadedEpic = actualFileManager.getByIdEpic(epic1.getId());
+        Epic loadedEpic = actualFileManager.getByIdEpic(epic_1.getId());
         List<Integer> subtasksInEpic = loadedEpic.getSubtasks();
 
         assertEquals(2, subtasksInEpic.size());
-        assertEquals(subtask1.getId(), subtasksInEpic.get(0));
-        assertEquals(subtask2.getId(), subtasksInEpic.get(1));
+        assertEquals(subtask_1.getId(), subtasksInEpic.get(0));
+        assertEquals(subtask_2.getId(), subtasksInEpic.get(1));
     }
 
     @Test

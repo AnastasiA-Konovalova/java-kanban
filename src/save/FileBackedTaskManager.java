@@ -86,10 +86,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         }
 
         readFile.remove(0);
-
+        int maxId = 1;
         for (int i = 0; i < readFile.size(); i++) {
             String[] split = readFile.get(i).split(",");
             int id = Integer.parseInt(split[0]);
+
+            if (maxId < id) {
+                maxId = id;
+            }
             String name = split[2];
             Status status = Status.valueOf(split[3]);
             String description = split[4];
@@ -137,6 +141,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
             }
         }
+        taskManager.id = maxId + 1;
         return taskManager;
     }
 

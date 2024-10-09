@@ -32,9 +32,9 @@ class ManagersTest {
 
     @Test
     void differentInstanceOfHistoryManager() {
-        HistoryManager historyManager1 = Managers.getDefaultHistory();
-        HistoryManager historyManager2 = Managers.getDefaultHistory();
+        HistoryManager historyManager_1 = Managers.getDefaultHistory();
+        HistoryManager historyManager_2 = Managers.getDefaultHistory();
 
-        assertNotSame(historyManager1, historyManager2, "Методы одинаковы");
+        assertNotSame(historyManager_1, historyManager_2, "Методы одинаковы");
     }
 }
