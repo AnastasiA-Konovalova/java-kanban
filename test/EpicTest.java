@@ -8,16 +8,16 @@ class EpicTest {
 
     @Test
     void testUniqueIdForNewEpic() {
-        Epic epic1 = new Epic("NameEpic1", "DescriptionEpic1");
-        epic1.setId(1);
+        Epic epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
+        epic_1.setId(1);
 
-        Epic epic2 = new Epic("NameEpic2", "DescriptionEpic2");
-        epic2.setId(1);
+        Epic epic_2 = new Epic("NameEpic_2", "DescriptionEpic_2");
+        epic_2.setId(1);
 
-        Epic epic3 = new Epic("NameEpic3", "DescriptionEpic3");
-        epic3.setId(2);
+        Epic epic_3 = new Epic("NameEpic_3", "DescriptionEpic_3");
+        epic_3.setId(2);
 
-        assertEquals(epic1, epic2, "Должны быть равны");
-        assertNotEquals(epic2, epic3, "Равны быть не должны");
+        assertEquals(epic_1, epic_2, "Должны быть равны");
+        assertNotEquals(epic_2, epic_3, "Равны быть не должны");
     }
 }

@@ -23,20 +23,12 @@ public class InMemoryHistoryManager implements HistoryManager {
         return tail;
     }
 
-    public Map<Integer, Node> getMapOfTasks() {
-        return mapOfTasks;
-    }
-
     @Override
     public void add(Task task) {
         if (task == null) {
             return;
         }
-        if (mapOfTasks.containsKey(task.getId())) {
-            Node node = mapOfTasks.get(task.getId());
-            removeNode(node);
-            mapOfTasks.remove(task.getId());
-        }
+        remove(task.getId());
         linkAddLast(task);
     }
 

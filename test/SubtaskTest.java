@@ -9,19 +9,19 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 class SubtaskTest {
     @Test
     void testUniqueIdForNewSubtask() {
-        Epic epic1 = new Epic("NameEpic1", "DescriptionEpic1");
-        Subtask subtask1 = new Subtask("NameSubtask1", "DescriptionSubtask1", epic1);
-        subtask1.setId(1);
+        Epic epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
+        Subtask subtask_1 = new Subtask("NameSubtask_1", "DescriptionSubtask_1", epic_1);
+        subtask_1.setId(1);
 
-        Epic epic2 = new Epic("NameEpic2", "DescriptionEpic2");
-        Subtask subtask2 = new Subtask("NameSubtask2", "DescriptionSubtask2", epic2);
-        subtask2.setId(1);
+        Epic epic_2 = new Epic("NameEpic_2", "DescriptionEpic_2");
+        Subtask subtask_2 = new Subtask("NameSubtask_2", "DescriptionSubtask_2", epic_2);
+        subtask_2.setId(1);
 
-        Epic epic3 = new Epic("NameEpic3", "DescriptionEpic3");
-        Subtask subtask3 = new Subtask("NameSubtask3", "DescriptionSubtask3", epic3);
-        subtask3.setId(2);
+        Epic epic_3 = new Epic("NameEpic_3", "DescriptionEpic_3");
+        Subtask subtask_3 = new Subtask("NameSubtask_3", "DescriptionSubtask_3", epic_3);
+        subtask_3.setId(2);
 
-        assertEquals(subtask1, subtask2, "Должны быть равны");
-        assertNotEquals(subtask2, subtask3, "Равны быть не должны");
+        assertEquals(subtask_1, subtask_2, "Должны быть равны");
+        assertNotEquals(subtask_2, subtask_3, "Равны быть не должны");
     }
 }
