@@ -44,6 +44,11 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
+    void testHistoryIsEmpty() {
+        //Пустая история задач.
+    }
+
+    @Test
     void testAddTasksInHistoryTwice() {
         task_1.setId(1);
         task_2.setId(task_1.getId());

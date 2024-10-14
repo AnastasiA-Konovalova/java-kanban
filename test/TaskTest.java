@@ -1,6 +1,8 @@
 import org.junit.jupiter.api.Test;
 import tasks.Task;
 
+import java.time.Instant;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -19,5 +21,14 @@ class TaskTest {
 
         assertEquals(task1, task1, "Должны быть равны");
         assertNotEquals(task2, task3, "Равны быть не должны");
+    }
+
+    @Test
+    public void testGetEndTime() {
+//        if (getDuration() != null && getStartTime() != null) {
+//            return getStartTime().plus(getDuration());
+//        } else {
+//            return getStartTime(); //либо убрать иф, либо доб-ть Optional
+//        }
     }
 }

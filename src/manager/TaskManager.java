@@ -5,6 +5,7 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.List;
+import java.util.Set;
 
 public interface TaskManager {
     List<Task> getHistory();
@@ -46,4 +47,7 @@ public interface TaskManager {
     void deleteSubtaskById(Integer id);
 
     List<Subtask> getSubtaskFromEpic(Integer epicId);
+    Set<Task> getPrioritizedTasks(); //убрать?
+
+    boolean validateTask(Task task); // убрать?
 }

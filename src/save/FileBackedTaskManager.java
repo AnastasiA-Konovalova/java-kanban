@@ -16,7 +16,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
@@ -36,24 +39,38 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public void save() {
-        System.out.println("File created: " + path.getFileName());
-
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
-            fileWriter.write("id,type,name,status,description,epic\n");
+            fileWriter.write("id,type,name,status,description,startTime,duration,endTime,epic\n");
+//            for (Task item : taskMap.values()) {
+//                fileWriter.write(appendItemsToFile(item).toString());
+//            }
+            taskMap.values().stream()
+                    .forEach(item -> {
+                        try {
+                            fileWriter.write(appendItemsToFile(item).toString());
+                        } catch (IOException exc) {
+                            throw new RuntimeException();
+                        }
+                    });
 
-            for (Task item : taskMap.values()) {
-                fileWriter.write(appendItemsToFile(item).toString());
-            }
-
-            for (Epic item : epicMap.values()) {
-                fileWriter.write(appendItemsToFile(item).toString());
-            }
+            epicMap.values().stream()
+                    .forEach(item -> {
+                        try {
+                            fileWriter.write(appendItemsToFile(item).toString());
+                        } catch (IOException exc) {
+                            throw new RuntimeException();
+                        }
+                    });
+//            for (Epic item : epicMap.values()) {
+//                fileWriter.write(appendItemsToFile(item).toString());
+//            }
 
             for (Subtask item : subtaskMap.values()) {
                 StringBuilder sb = appendItemsToFile(item);
-                sb.append(item.getDescription()).append(",");
+                sb.append(",").append(item.getStartTime()).append(",");
+                sb.append(item.getDuration()).append(",");
+                sb.append(item.getEndTime()).append(",");
                 sb.append(item.getEpic().getId()).append("\n");
-
                 fileWriter.write(sb.toString());
             }
         } catch (IOException e) {
@@ -66,9 +83,15 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         sb.append(item.getId()).append(",")
                 .append(item.getClass().getSimpleName()).append(",")
                 .append(item.getName()).append(",")
-                .append(item.getStatus().toString()).append(",");
-        if (!item.getClass().getSimpleName().equals("Subtask")) {
-            sb.append(item.getDescription()).append("\n");
+                .append(item.getStatus().toString()).append(",")
+                .append(item.getDescription());
+
+        if (item.getClass().getSimpleName().equals("Task") && item.getStartTime() != null) {
+            sb.append("," + item.getStartTime()).append(",");
+            sb.append(item.getDuration()).append(",");
+            sb.append(item.getEndTime()).append("\n");
+        } else if (!item.getClass().getSimpleName().equals("Subtask") && item.getStartTime() == null) {
+            sb.append("\n");
         }
         return sb;
     }
@@ -78,9 +101,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         List<String> readFile = new ArrayList<>();
         try (BufferedReader bufferedReader = new BufferedReader(new FileReader(file))) {
-            while (bufferedReader.ready()) {
-                readFile.add(bufferedReader.readLine());
-            }
+            bufferedReader.lines().forEach(readFile::add);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки файла " + e.getMessage());
         }
@@ -98,7 +119,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             Status status = Status.valueOf(split[3]);
             String description = split[4];
 
-
             if (TaskType.Task.name().equalsIgnoreCase(split[1])) {
                 Task task = new Task();
                 task.setId(id);
@@ -106,6 +126,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 task.setStatus(status);
                 task.setDescription(description);
 
+                if (split.length > 5) {
+                    loadStartTimeAndDuration(task, split);
+                }
+                taskManager.validateTask(task);
                 taskManager.taskMap.put(task.getId(), task);
             }
 
@@ -126,23 +150,47 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 subtask.setStatus(status);
                 subtask.setDescription(description);
 
-                if (split.length > 5) {
-                    for (int j = 5; j < split.length; j++) {
-                        subtask.setEpic(taskManager.epicMap.get(Integer.parseInt(split[j])));
-                        if (subtask.getEpic().getSubtasks() == null) {
-                            subtask.getEpic().setSubtasks(new ArrayList<>(subtask.getId()));
-                        } else {
-                            System.out.println();
-                        }
-                        subtask.getEpic().addSubtask(subtask);
-                        System.out.println("Epic " + subtask.getEpic());
-                    }
-                    taskManager.subtaskMap.put(subtask.getId(), subtask);
+                if (split[5].equals("null") || split[6].equals("null")) {
+                    subtask.setStartTime(null);
+                    subtask.setDuration(null);
+
+                } else {
+                    loadStartTimeAndDuration(subtask, split);
                 }
+
+                subtask.setEpic(taskManager.epicMap.get(Integer.parseInt(split[8])));
+                if (subtask.getEpic().getSubtasks() == null) {
+                    subtask.getEpic().setSubtasks(new ArrayList<>(subtask.getId()));
+                }
+                subtask.getEpic().addSubtask(subtask);
+                taskManager.validateTask(subtask);
+                taskManager.subtaskMap.put(subtask.getId(), subtask);
             }
         }
         taskManager.id = maxId + 1;
+        //цикл для проверки
+//        System.out.println("LIST CHECK");
+//        System.out.println(taskManager.taskMap.get(1).getStartTime());
+//        System.out.println(taskManager.taskMap.get(2).getStartTime());
+//        System.out.println(taskManager.taskMap);
+//        System.out.println(taskManager.subtaskMap.get(8).getStartTime());
+//        System.out.println(taskManager.subtaskMap.get(9).getStartTime());
         return taskManager;
+    }
+
+    public static Task loadStartTimeAndDuration(Task task, String[] split) {
+        String startTime = "";
+        String duration = "";
+        if (split.length > 5) {
+            startTime = split[5];
+            duration = split[6];
+        }
+
+        Instant instantStartTime = Instant.parse(startTime);
+        Duration durationParse = Duration.parse(duration);
+        task.setStartTime(instantStartTime);
+        task.setDuration(durationParse);
+        return task;
     }
 
     @Override

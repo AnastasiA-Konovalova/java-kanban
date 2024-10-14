@@ -2,11 +2,20 @@ package tasks;
 
 import status.Status;
 
+import java.beans.beancontext.BeanContextServiceProviderBeanInfo;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
     private List<Integer> idSubtask;
+
+    public void setEndTime(Instant endTime) {
+        this.endTime = endTime;
+    }
+
+    private Instant endTime;
 
     public Epic(String name, String descriptions) {
         super(name, descriptions);
@@ -36,6 +45,11 @@ public class Epic extends Task {
 
     public void deleteSubtaskById(Subtask subtask) {
         idSubtask.remove(subtask.getId());
+    }
+
+    @Override
+    public Instant getEndTime() {
+        return endTime;
     }
 
     @Override
