@@ -15,7 +15,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {
     protected Integer id = 1;
@@ -43,7 +42,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task createTask(Task task) {
-        System.out.println("boolean " + validateTask(task));
         if (!validateTask(task)) {
             task.setId(id++);
             taskMap.put(task.getId(), task);
@@ -121,6 +119,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void deleteAllTasks() {
         List<Integer> taskId = new ArrayList<>(taskMap.keySet());
         taskId.stream().forEach(integerId -> historyManager.remove(integerId));
+
         taskMap.clear();
         System.out.println("Задачи удалены.");
     }
@@ -131,6 +130,7 @@ public class InMemoryTaskManager implements TaskManager {
         epicId.stream().forEach(integerId -> historyManager.remove(integerId));
         List<Integer> subtaskId = new ArrayList<>(subtaskMap.keySet());
         subtaskId.stream().forEach(integerId -> historyManager.remove(integerId));
+
         epicMap.clear();
         subtaskMap.clear();
         System.out.println("tasks.Epic-задачи удалены.");
@@ -139,10 +139,8 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void deleteAllSubtasks() {
         List<Integer> subtaskId = new ArrayList<>(subtaskMap.keySet());
-//        for (Integer integerId : taskId) {
-//            historyManager.remove(integerId);
-//        }
         subtaskId.stream().forEach(integerId -> historyManager.remove(integerId));
+
         subtaskMap.clear();
         epicMap.values().stream().forEach(Epic::deleteAllSubtasks);
         System.out.println("Подзадачи удалены.");
@@ -213,17 +211,6 @@ public class InMemoryTaskManager implements TaskManager {
                     .allMatch(subtask -> subtaskMap.get(subtask).getStatus().equals(Status.NEW));
             boolean allDone = subtasks.stream()
                     .allMatch(subtask -> subtaskMap.get(subtask).getStatus().equals(Status.DONE));
-//            boolean allNew = true;
-//            boolean allDone = true;
-//
-//            for (Integer subtask : subtasks) {
-//                if (!subtaskMap.get(subtask).getStatus().equals(Status.NEW)) {
-//                    allNew = false;
-//                }
-//                if (!subtaskMap.get(subtask).getStatus().equals(Status.DONE)) {
-//                    allDone = false;
-//                }
-//            }
 
             if (allNew) {
                 epic.setStatus(Status.NEW);
@@ -259,12 +246,8 @@ public class InMemoryTaskManager implements TaskManager {
             subtaskMap.remove(subtask);
             historyManager.remove(subtask);
         });
-//        for (Integer subtask : subtasks) {
-//            subtaskMap.remove(subtask);
-//            historyManager.remove(subtask);
-//        }
-        historyManager.remove(id);
 
+        historyManager.remove(id);
         System.out.println("tasks.Epic-задача с id " + id + " удалена.");
     }
 
@@ -295,23 +278,12 @@ public class InMemoryTaskManager implements TaskManager {
                 .map(subtaskId -> subtaskMap.get(subtaskId))
                 .filter(Objects::nonNull)
                 .forEachOrdered(idSubtasksList::add);
-//        for (Integer idSubtask : epic.getSubtasks()) {
-//            Subtask subtask = subtaskMap.get(idSubtask);
-//            if (subtask != null) {
-//                idSubtasksList.add(subtask);
-//            }
-//        }
         return idSubtasksList;
     }
 
-    public void getStartTimeForEpic(Epic epic) { // list subtask contains Subtask that epic is including
-        List<Integer> subtasksId = epic.getSubtasks();
-        List<Subtask> subtasks = new ArrayList<>();
-
-        subtasksId.stream()
-                .filter(subtaskMap::containsKey)
-                .map(subtaskMap::get)
-                .forEachOrdered(subtasks::add);
+    @Override
+    public void getStartTimeForEpic(Epic epic) {
+        List<Subtask> subtasks = searchTimeCharacteristicsSubtask(epic);
 
         List<Instant> instants = new ArrayList<>();
         subtasks.stream()
@@ -325,41 +297,21 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         epic.setStartTime(min);
-        System.out.println("Min start time " + min);
-        //временный цикл для ввода стартового времени сабтаск, удалить
-        for (Subtask subtask : subtasks) {
-            System.out.println(subtask.getStartTime());
-        }
     }
 
-    public void getDurationForEpic(Epic epic) { //этот метод и прошлый похожи, вынести часть в отдельный
-        List<Integer> subtasksId = epic.getSubtasks();
-        List<Subtask> subtasks = new ArrayList<>();
-        subtasksId.stream()
-                .filter(subtaskMap::containsKey)
-                .map(subtaskMap::get)
-                .forEachOrdered(subtasks::add);
+    @Override
+    public void getDurationForEpic(Epic epic) {
+        List<Subtask> subtasks = searchTimeCharacteristicsSubtask(epic);
 
         Duration totalDuration = subtasks.stream()
                 .map(Subtask::getDuration)
-                .reduce(Duration.ZERO, Duration::plus); // Суммируем все Duration
-        System.out.println("Duration all subtasks" + totalDuration);
+                .reduce(Duration.ZERO, Duration::plus);
         epic.setDuration(totalDuration);
-
-        //временный цикл для ввода стартового времени сабтаск, удалить
-        for (Subtask subtask : subtasks) {
-            System.out.println(subtask.getDuration());
-        }
     }
 
-    public Instant getEndTimeForEpic(Epic epic) {
-        List<Integer> subtasksId = epic.getSubtasks();
-        List<Subtask> subtasks = new ArrayList<>();
-        subtasksId.stream()
-                .filter(subtaskMap::containsKey)
-                .map(subtaskMap::get)
-                .forEachOrdered(subtasks::add);
-        //System.out.println(subtasks + " subtask");
+    @Override
+    public void getEndTimeForEpic(Epic epic) {
+        List<Subtask> subtasks = searchTimeCharacteristicsSubtask(epic);
 
         Instant endTime = subtasks.get(0).getEndTime();
         for (int i = 0; i < subtasks.size(); i++) {
@@ -369,13 +321,17 @@ public class InMemoryTaskManager implements TaskManager {
             }
         }
         epic.setEndTime(endTime);
-        System.out.println("Epic endTime" + epic.getEndTime());
+    }
 
-        //временный цикл для ввода end времени сабтаск, удалить
-        for (Subtask subtask : subtasks) {
-            System.out.println(subtask.getEndTime());
-        }
-        return endTime;
+    private List<Subtask> searchTimeCharacteristicsSubtask(Epic epic) {
+        List<Integer> subtasksId = epic.getSubtasks();
+        List<Subtask> subtasks = new ArrayList<>();
+
+        subtasksId.stream()
+                .filter(subtaskMap::containsKey)
+                .map(subtaskMap::get)
+                .forEachOrdered(subtasks::add);
+        return subtasks;
     }
 
     @Override
@@ -395,8 +351,6 @@ public class InMemoryTaskManager implements TaskManager {
         });
         sortedSet.addAll(taskList);
         sortedSet.addAll(subtaskList);
-        //System.out.println("Sorted " + sortedSet);
-
         return sortedSet;
     }
 
@@ -413,27 +367,3 @@ public class InMemoryTaskManager implements TaskManager {
                 );
     }
 }
-
-//    1   s1________________e1                    startTime1 before startTime2
-// 2         s2_________________e2            endTime1 before endTime2, but should be before start time
-    /*if (startTime1.isBefore(startTime2) && (endTime1.isBefore(endTime2)) {
-    return true;
-    }
-    */
-// 1        s1__________________e1            startTime1 after startTime2
-//2  s2_________________e2                    startTime1 before endTime2 but should be after
-    /*if (startTime1.isAfter(startTime2) && (startTime1.isBefore(endTime2)) {
-    return true;
-    }
-    */
-
-
-//1        s1____________e1                   startTime1 after startTime2 and endTime1 before endTime2
-//2  s1_________________________e1            startTime2 before startTime1 and endTime2 after endTime1
-    /*if (startTime1.isAfter(startTime2) && (endTime1.isBefore(endTime2) && (startTime2.isBefore(startTime1) &&
-    (endTime2.isAfter(endTime2)) {
-    return true;
-    }
-    */
-
-

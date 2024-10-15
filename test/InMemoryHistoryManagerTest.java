@@ -45,7 +45,9 @@ class InMemoryHistoryManagerTest {
 
     @Test
     void testHistoryIsEmpty() {
-        //Пустая история задач.
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(0, history.size());
     }
 
     @Test

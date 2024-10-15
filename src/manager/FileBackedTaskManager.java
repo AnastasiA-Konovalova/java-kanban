@@ -1,7 +1,6 @@
-package save;
+package manager;
 
 import exeption.ManagerSaveException;
-import manager.InMemoryTaskManager;
 import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
@@ -13,43 +12,34 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
     private Path path;
 
-    public FileBackedTaskManager(String fileName) throws IOException {
+    public FileBackedTaskManager(String fileName) {
         this(Paths.get(fileName));
     }
 
-    public FileBackedTaskManager(Path path) throws IOException {
+    public FileBackedTaskManager(Path path) {
         super();
-        if (Files.exists(path)) {
-            this.path = path;
-        } else {
-            this.path = Files.createFile(path);
-        }
+        this.path = path;
     }
 
     public void save() {
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             fileWriter.write("id,type,name,status,description,startTime,duration,endTime,epic\n");
-//            for (Task item : taskMap.values()) {
-//                fileWriter.write(appendItemsToFile(item).toString());
-//            }
             taskMap.values().stream()
                     .forEach(item -> {
                         try {
                             fileWriter.write(appendItemsToFile(item).toString());
                         } catch (IOException exc) {
-                            throw new RuntimeException();
+                            throw new ManagerSaveException("Ошибка в чтении задачи формата task");
                         }
                     });
 
@@ -58,12 +48,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                         try {
                             fileWriter.write(appendItemsToFile(item).toString());
                         } catch (IOException exc) {
-                            throw new RuntimeException();
+                            throw new ManagerSaveException("Ошибка в чтении задачи формата epic");
                         }
                     });
-//            for (Epic item : epicMap.values()) {
-//                fileWriter.write(appendItemsToFile(item).toString());
-//            }
 
             for (Subtask item : subtaskMap.values()) {
                 StringBuilder sb = appendItemsToFile(item);
@@ -96,7 +83,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return sb;
     }
 
-    public static FileBackedTaskManager loadFromFile(File file) throws IOException {
+    public static FileBackedTaskManager loadFromFile(File file) {
         FileBackedTaskManager taskManager = new FileBackedTaskManager(file.getName());
 
         List<String> readFile = new ArrayList<>();
@@ -111,7 +98,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (int i = 0; i < readFile.size(); i++) {
             String[] split = readFile.get(i).split(",");
             int id = Integer.parseInt(split[0]);
-
             if (maxId < id) {
                 maxId = id;
             }
@@ -168,17 +154,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             }
         }
         taskManager.id = maxId + 1;
-        //цикл для проверки
-//        System.out.println("LIST CHECK");
-//        System.out.println(taskManager.taskMap.get(1).getStartTime());
-//        System.out.println(taskManager.taskMap.get(2).getStartTime());
-//        System.out.println(taskManager.taskMap);
-//        System.out.println(taskManager.subtaskMap.get(8).getStartTime());
-//        System.out.println(taskManager.subtaskMap.get(9).getStartTime());
         return taskManager;
     }
 
-    public static Task loadStartTimeAndDuration(Task task, String[] split) {
+    public static void loadStartTimeAndDuration(Task task, String[] split) {
         String startTime = "";
         String duration = "";
         if (split.length > 5) {
@@ -190,7 +169,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration durationParse = Duration.parse(duration);
         task.setStartTime(instantStartTime);
         task.setDuration(durationParse);
-        return task;
     }
 
     @Override

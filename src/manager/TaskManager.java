@@ -47,6 +47,13 @@ public interface TaskManager {
     void deleteSubtaskById(Integer id);
 
     List<Subtask> getSubtaskFromEpic(Integer epicId);
+
+    void getStartTimeForEpic(Epic epic);
+
+    void getDurationForEpic(Epic epic);
+
+    void getEndTimeForEpic(Epic epic);
+
     Set<Task> getPrioritizedTasks(); //убрать?
 
     boolean validateTask(Task task); // убрать?

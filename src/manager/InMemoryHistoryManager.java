@@ -11,8 +11,10 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node head;
     private Node tail;
     private Map<Integer, Node> mapOfTasks = new HashMap<>();
+    TaskManager taskManager;
 
     public InMemoryHistoryManager() {
+
     }
 
     public Node getHead() {
@@ -28,12 +30,13 @@ public class InMemoryHistoryManager implements HistoryManager {
         if (task == null) {
             return;
         }
+        taskManager = Managers.getDefault();
+        if (taskManager.validateTask(task)) {
+            System.out.println("Задача пересекается с существующими задачами");
+            return;
+        }
         remove(task.getId());
         linkAddLast(task);
-        //System.out.println("111" + mapOfTasks);
-        //В методе add выполните проверку, пересекается ли добавляемая задача с любой другой в
-        // списке менеджера. Для этого используйте Stream API и метод, который вы реализовали в
-        // предыдущем пункте.
     }
 
     @Override
@@ -45,7 +48,6 @@ public class InMemoryHistoryManager implements HistoryManager {
         Node node = mapOfTasks.get(id);
         removeNode(node);
         mapOfTasks.remove(id);
-        //System.out.println("Remove " + mapOfTasks);
     }
 
     @Override
@@ -64,7 +66,6 @@ public class InMemoryHistoryManager implements HistoryManager {
             tail = newNode;
         }
         mapOfTasks.put(task.getId(), newNode);
-        //System.out.println("link " + mapOfTasks);
     }
 
     public List<Task> getTasks() {

@@ -5,8 +5,6 @@ import java.time.Instant;
 
 public class Subtask extends Task {
     private Epic epic;
-    //private Instant startTime;
-   // private Instant endTime;
 
     public Subtask(String name, String descriptions, Epic epic) {
         super(name, descriptions);

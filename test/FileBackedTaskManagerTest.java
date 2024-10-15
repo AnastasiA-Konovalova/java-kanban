@@ -1,7 +1,7 @@
 import exeption.ManagerSaveException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import save.FileBackedTaskManager;
+import manager.FileBackedTaskManager;
 import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
@@ -35,7 +35,6 @@ class FileBackedTaskManagerTest {
     private Subtask subtask_1;
     private Subtask subtask_2;
     private Subtask subtask_3;
-    private Subtask subtask_4;
     private Instant instant_1;
     private Instant instant_2;
     private Instant instant_3;
@@ -71,7 +70,6 @@ class FileBackedTaskManagerTest {
         subtask_1 = new Subtask("NameSubtask_1", "DescriptionSubtask_1", epic_1);
         subtask_2 = new Subtask("NameSubtask_2", "DescriptionSubtask_2", epic_1);
         subtask_3 = new Subtask("NameSubtask_3", "DescriptionSubtask_1", epic_1, instant_3, Duration.ofSeconds(1000));
-        subtask_4 = new Subtask("NameSubtask_4", "DescriptionSubtask_1", epic_2, instant_4, Duration.ofSeconds(60000) );
     }
 
     @Test
@@ -91,7 +89,6 @@ class FileBackedTaskManagerTest {
         List<Task> taskList = actualFileManager.getTaskList();
         taskList.sort(Comparator.comparingInt(Task::getId));
 
-        System.out.println(actualFileManager.getTaskList());
         assertEquals(5, taskList.size());
         assertEquals(4, taskList.get(0).getId());
         assertEquals(Task.class, taskList.get(0).getClass());
@@ -353,16 +350,9 @@ class FileBackedTaskManagerTest {
     }
 
     @Test
-    public void testException() throws IOException {
+    public void testLoadFromNotExistingFile() {
         File tmpFile = new File("data-empty-file");
 
-        assertThrows(IndexOutOfBoundsException.class, () -> FileBackedTaskManager.loadFromFile(tmpFile));
+        assertThrows(ManagerSaveException.class, () -> FileBackedTaskManager.loadFromFile(tmpFile));
     }
-
-    /*
-    Корректный перехват исключений при работе с файлами: для этого используйте утилитарные
-    методы JUnit — Assertions.assertThrows(…) и Assertions.assertDoesNotThrow(…). Эти методы получают
-    на вход класс-исключение и экземпляр анонимного класса/лямбду. В единственном методе реализуется
-    вызов того кода, который потенциально может вызвать исключение.
-     */
 }

@@ -2,8 +2,7 @@ package main;
 
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
-import save.FileBackedTaskManager;
-import status.Status;
+import manager.FileBackedTaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -162,10 +161,6 @@ public class Main {
 
         System.out.println("______DateTime___________");
          //LocalDateTime, Instant, Duration
-        System.out.println("getEndTime " + task1.getEndTime());
-        System.out.println(task1);
-
-
         Epic epicForCheck1 = new Epic("NameOfEpicForCheck1", "Deck");
         inMemoryTaskManager.createEpic(epicForCheck1);
         Subtask sub1 = new Subtask("Sub1", "Dedc", epicForCheck1, instant, Duration.ofHours(3));
@@ -174,11 +169,10 @@ public class Main {
         inMemoryTaskManager.createSubtask(sub1);
         inMemoryTaskManager.createSubtask(sub2);
         inMemoryTaskManager.createSubtask(sub3);
-        //start time for epic
 
+        //start time for epic
         inMemoryTaskManager.getStartTimeForEpic(epicForCheck1);
-        //System.out.println(epicForCheck1.getSubtasks());
-        //sub2.getStartTime();
+
         //duration for epic
         inMemoryTaskManager.getDurationForEpic(epicForCheck1);
 
@@ -197,10 +191,6 @@ public class Main {
         ((FileBackedTaskManager) inMemoryTaskManager).save();
         FileBackedTaskManager.loadFromFile(path.toFile());
 
-//
-        //System.out.println("!!!!!!!!!!!" + inMemoryTaskManager.getHistory() + "!!!!!!!" + inMemoryTaskManager.getHistory().size());
-        //Update
-
-
+        System.out.println("History2" + inMemoryTaskManager.getHistory());
     }
 }

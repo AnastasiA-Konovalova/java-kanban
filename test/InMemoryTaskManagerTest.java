@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -33,12 +35,13 @@ class InMemoryTaskManagerTest {
     private Subtask subtask_2;
     private Subtask subtask_3;
     private Subtask subtask_4;
+    private Subtask subtask_5;
+    private Subtask subtask_6;
     private Instant instant_1;
     private Instant instant_2;
     private Instant instant_3;
     private Instant instant_4;
-    ZoneId zoneId;
-
+    private ZoneId zoneId;
     @BeforeEach
     void setUp() {
         zoneId = ZoneId.of("Europe/Moscow");
@@ -60,14 +63,16 @@ class InMemoryTaskManagerTest {
         instant_4 = zonedDateTime_4.toInstant();
 
         taskManager = Managers.getDefault();
-        task_1 = new Task("NameTask_1", "DescriptionTask_1");
+        task_1 = new Task("NameTask_1", "DescriptionTask_1", instant_1, Duration.ofSeconds(8000));
         task_2 = new Task("NameTask_2", "DescriptionTask_2");
         epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
         epic_2 = new Epic("NameEpic_2", "DescriptionEpic_2");
         subtask_1 = new Subtask("NameSubtask_1", "DescriptionSubtask_1", epic_1);
         subtask_2 = new Subtask("NameSubtask_2", "DescriptionSubtask_2", epic_1);
         subtask_3 = new Subtask("NameSubtask_3", "DescriptionSubtask_1", epic_1, instant_3, Duration.ofSeconds(1000));
-        subtask_4 = new Subtask("NameSubtask_4", "DescriptionSubtask_1", epic_2, instant_4, Duration.ofSeconds(60000) );
+        subtask_4 = new Subtask("NameSubtask_4", "DescriptionSubtask_1", epic_2, instant_4, Duration.ofSeconds(60000));
+        subtask_5 = new Subtask("NameSubtask_5", "DescriptionSubtask_5", epic_2, instant_2, Duration.ofSeconds(7000));
+        subtask_6 = new Subtask("NameSubtask_6", "DescriptionSubtask_6", epic_2, instant_1, Duration.ofSeconds(800));
     }
 
     @Test
@@ -318,8 +323,6 @@ class InMemoryTaskManagerTest {
 
     @Test
     void testUpdateEpicStatusIfAllSubtasksNewEndDone() {
-        //Подзадачи со статусами NEW и DONE.
-
         subtask_1.setStatus(Status.IN_PROGRESS);
         subtask_2.setStatus(Status.IN_PROGRESS);
         taskManager.createEpic(epic_1);
@@ -355,7 +358,6 @@ class InMemoryTaskManagerTest {
 
         assertEquals(0, taskManager.getEpicList().size(), "Список epic пуст");
         assertEquals(0, taskManager.getSubtaskList().size(), "Список subtask пуст");
-        System.out.println(subtask_1);
     }
 
     @Test
@@ -404,26 +406,72 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void testGetStartTimeForEpic() {
+        taskManager.createEpic(epic_2);
+        taskManager.createSubtask(subtask_4);
+        taskManager.createSubtask(subtask_5);
+        taskManager.createSubtask(subtask_6);
 
+        taskManager.getStartTimeForEpic(epic_2);
+
+        assertEquals("2024-04-10T07:00:00Z", epic_2.getStartTime().toString());
     }
 
     @Test
     public void testGetDurationForEpic() {
+        taskManager.createEpic(epic_2);
+        taskManager.createSubtask(subtask_4);
+        taskManager.createSubtask(subtask_5);
+        taskManager.createSubtask(subtask_6);
 
+        taskManager.getDurationForEpic(epic_2);
+
+        assertEquals("PT18H50M", epic_2.getDuration().toString());
     }
 
     @Test
-    public void testGetEndTimeForEpic(Epic epic) {
+    public void testGetEndTimeForEpic() {
+        taskManager.createEpic(epic_2);
+        taskManager.createSubtask(subtask_4);
+        taskManager.createSubtask(subtask_5);
+        taskManager.createSubtask(subtask_6);
 
+        taskManager.getEndTimeForEpic(epic_2);
+
+        assertEquals("2024-12-15T12:23:20Z", epic_2.getEndTime().toString());
     }
 
     @Test
     public void getPrioritizedTasks() {
+        taskManager.createTask(task_1);
+        taskManager.createTask(task_2);
+        taskManager.createEpic(epic_1);
+        taskManager.createEpic(epic_2);
+        taskManager.createSubtask(subtask_1);
+        taskManager.createSubtask(subtask_2);
+        taskManager.createSubtask(subtask_3);
+        taskManager.createSubtask(subtask_4);
+        taskManager.createSubtask(subtask_5);
 
+        Set<Task> prioritizedSet = taskManager.getPrioritizedTasks();
+        List<Task> prioritizedList = new ArrayList<>(prioritizedSet);
+
+        assertEquals(4, prioritizedList.size());
+        assertEquals(subtask_5, prioritizedList.get(0));
+        assertEquals(subtask_4, prioritizedList.get(1));
+        assertEquals(subtask_3, prioritizedList.get(2));
+        assertEquals(task_1, prioritizedList.get(3));
     }
 
     @Test
-    public void validateTask(Task taskForCheck) {
+    public void validateTask() {
+        taskManager.createTask(task_1);
+        taskManager.createEpic(epic_2);
+        taskManager.createSubtask(subtask_5);
 
+        boolean validate_1 = taskManager.validateTask(taskManager.createSubtask(subtask_6));
+        boolean validate_2 = taskManager.validateTask(taskManager.createSubtask(subtask_4));
+
+        assertTrue(true, String.valueOf(validate_1));
+        assertFalse(false, String.valueOf(validate_2));
     }
 }

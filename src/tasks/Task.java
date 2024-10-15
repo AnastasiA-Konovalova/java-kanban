@@ -4,13 +4,9 @@ import status.Status;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Formatter;
-
-import static java.util.Objects.requireNonNull;
 
 public class Task {
     protected String name;
@@ -26,6 +22,7 @@ public class Task {
         this.description = description;
         this.status = Status.NEW;
     }
+
     public Task(String name, String description, Instant startTime, Duration duration) {
         this.name = name;
         this.description = description;
@@ -88,19 +85,11 @@ public class Task {
     }
 
     public Instant getEndTime() {
-       if (getDuration() != null && getStartTime() != null) {
-           return getStartTime().plus(getDuration());
-       } else {
-           return getStartTime(); //либо убрать иф, либо доб-ть Optional
-       }
-    }
-
-    public DateTimeFormatter getFormatter() {
-        return formatter;
-    }
-
-    public void setFormatter(DateTimeFormatter formatter) {
-        this.formatter = formatter;
+        if (getDuration() != null && getStartTime() != null) {
+            return getStartTime().plus(getDuration());
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -129,7 +118,7 @@ public class Task {
             return "Start time is not set";
         }
         if (formatter == null) {
-            formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.HH:mm"); // Инициализация по умолчанию
+            formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.HH:mm");
         }
 
         ZonedDateTime zonedDateTime = startTime.atZone(ZoneId.systemDefault());
