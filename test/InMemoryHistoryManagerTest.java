@@ -44,6 +44,13 @@ class InMemoryHistoryManagerTest {
     }
 
     @Test
+    void testHistoryIsEmpty() {
+        List<Task> history = historyManager.getHistory();
+
+        assertEquals(0, history.size());
+    }
+
+    @Test
     void testAddTasksInHistoryTwice() {
         task_1.setId(1);
         task_2.setId(task_1.getId());

@@ -13,6 +13,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Map<Integer, Node> mapOfTasks = new HashMap<>();
 
     public InMemoryHistoryManager() {
+
     }
 
     public Node getHead() {
