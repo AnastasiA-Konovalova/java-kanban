@@ -34,34 +34,28 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     public void save() {
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             fileWriter.write("id,type,name,status,description,startTime,duration,endTime,epic\n");
-            taskMap.values().stream()
-                    .forEach(item -> {
-                        try {
-                            fileWriter.write(appendItemsToFile(item).toString());
-                        } catch (IOException exc) {
-                            throw new ManagerSaveException("Ошибка в чтении задачи формата task");
-                        }
-                    });
+            taskMap.values()
+                    .forEach(ThrowableConsumer.of(item -> fileWriter.write(appendItemsToFile(item).toString()),
+                            ex -> new ManagerSaveException("Ошибка в чтении задачи формата task")));
 
-            epicMap.values().stream()
-                    .forEach(item -> {
-                        try {
-                            fileWriter.write(appendItemsToFile(item).toString());
-                        } catch (IOException exc) {
-                            throw new ManagerSaveException("Ошибка в чтении задачи формата epic");
-                        }
-                    });
+            epicMap.values()
+                    .forEach(ThrowableConsumer.of(item -> fileWriter.write(appendItemsToFile(item).toString()),
+                            ex -> new ManagerSaveException("Ошибка в чтении задачи формата epic")));
 
-            for (Subtask item : subtaskMap.values()) {
-                StringBuilder sb = appendItemsToFile(item);
-                sb.append(",").append(item.getStartTime()).append(",");
-                sb.append(item.getDuration()).append(",");
-                sb.append(item.getEndTime()).append(",");
-                sb.append(item.getEpic().getId()).append("\n");
-                fileWriter.write(sb.toString());
-            }
+            subtaskMap.values().forEach(ThrowableConsumer.of(
+                    item -> {
+                        StringBuilder sb = appendItemsToFile(item);
+                        sb.append(",").append(item.getStartTime()).append(",");
+                        sb.append(item.getDuration()).append(",");
+                        sb.append(item.getEndTime()).append(",");
+                        sb.append(item.getEpic().getId()).append("\n");
+
+                        fileWriter.write(sb.toString());
+                    },
+                    ex -> new ManagerSaveException("Ошибка в чтении задачи формата subtask")
+            ));
         } catch (IOException e) {
-            throw new ManagerSaveException("Ошибка записи в файл " + e.getMessage());
+            throw new ManagerSaveException("Ошибка чтения " + e.getMessage());
         }
     }
 
@@ -229,8 +223,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task updateTasks) {
-        super.updateTask(updateTasks);
+    public void updateTask(Task oldTask, Task updateTasks) {
+        super.updateTask(oldTask, updateTasks);
         save();
     }
 
@@ -241,8 +235,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask updateSubtask) {
-        super.updateSubtask(updateSubtask);
+    public void updateSubtask(Subtask subtask, Subtask updateSubtask) {
+        super.updateSubtask(subtask, updateSubtask);
         save();
     }
 }

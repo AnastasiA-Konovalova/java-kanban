@@ -5,7 +5,6 @@ import tasks.Subtask;
 import tasks.Task;
 
 import java.util.List;
-import java.util.Set;
 
 public interface TaskManager {
     List<Task> getHistory();
@@ -34,11 +33,11 @@ public interface TaskManager {
 
     Subtask getByIdSubtask(Integer id);
 
-    void updateTask(Task updateTasks);
+    void updateTask(Task task, Task updateTasks);
 
     void updateEpic(Epic updateEpic);
 
-    void updateSubtask(Subtask updateSubtask);
+    void updateSubtask(Subtask subtask, Subtask updateSubtask);
 
     void deleteTaskById(Integer id);
 
@@ -48,13 +47,5 @@ public interface TaskManager {
 
     List<Subtask> getSubtaskFromEpic(Integer epicId);
 
-    void getStartTimeForEpic(Epic epic);
-
-    void getDurationForEpic(Epic epic);
-
-    void getEndTimeForEpic(Epic epic);
-
-    Set<Task> getPrioritizedTasks(); //убрать?
-
-    boolean validateTask(Task task); // убрать?
+    List<Task> getPrioritizedTasks();
 }

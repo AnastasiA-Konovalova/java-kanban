@@ -41,8 +41,13 @@ public class Epic extends Task {
         setStatus(Status.NEW);
     }
 
-    public void deleteSubtaskById(Subtask subtask) {
-        idSubtask.remove(subtask.getId());
+    public void removeSubtask(Subtask subtask) {
+        for (int i = 0; i < idSubtask.size(); i++) {
+            if (idSubtask.get(i) == subtask.getId()) {
+                idSubtask.remove(i);
+                return;
+            }
+        }
     }
 
     @Override

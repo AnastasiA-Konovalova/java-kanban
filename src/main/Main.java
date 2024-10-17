@@ -1,8 +1,8 @@
 package main;
 
+import manager.FileBackedTaskManager;
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
-import manager.FileBackedTaskManager;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
@@ -26,7 +26,7 @@ public class Main {
         InMemoryTaskManager inMemoryTaskManager = new FileBackedTaskManager(path);
 
 
-       //create instants for tasks
+        //create instants for tasks
         //1
         ZoneId zoneId = ZoneId.of("Europe/Moscow");
         LocalDateTime localDateTime = LocalDateTime.of(2024, Month.NOVEMBER, 4, 7, 1);
@@ -56,7 +56,7 @@ public class Main {
         Instant instant5 = zonedDateTime5.toInstant();
 
         //tasks.Task
-        Task task1 = new Task("Task_1", "Go away", instant4,Duration.ofSeconds(7000));
+        Task task1 = new Task("Task_1", "Go away", instant4, Duration.ofSeconds(7000));
         Task task2 = new Task("Task_2", "Cook", instant5, Duration.ofSeconds(5000));
         inMemoryTaskManager.createTask(task1);// create
         inMemoryTaskManager.createTask(task2);
@@ -160,15 +160,15 @@ public class Main {
 
 
         System.out.println("______DateTime___________");
-         //LocalDateTime, Instant, Duration
+        //LocalDateTime, Instant, Duration
         Epic epicForCheck1 = new Epic("NameOfEpicForCheck1", "Deck");
         inMemoryTaskManager.createEpic(epicForCheck1);
-        Subtask sub1 = new Subtask("Sub1", "Dedc", epicForCheck1, instant, Duration.ofHours(3));
-        Subtask sub2 = new Subtask("Sub2", "Dedc", epicForCheck1, instant2, Duration.ofMinutes(50));
-        Subtask sub3 = new Subtask("Sub3", "Dedc", epicForCheck1, instant3, Duration.ofMinutes(30));
-        inMemoryTaskManager.createSubtask(sub1);
-        inMemoryTaskManager.createSubtask(sub2);
+        //Subtask sub1 = new Subtask("Sub1", "Dedc", epicForCheck1, instant, Duration.ofHours(3));
+        Subtask sub3 = new Subtask("Subtask_3", "Dedc3", epicForCheck1, instant2, Duration.ofMinutes(50));
+        Subtask sub4 = new Subtask("Subtask_4", "Dedc4", epicForCheck1, instant3, Duration.ofMinutes(30));
+        // inMemoryTaskManager.createSubtask(sub1);
         inMemoryTaskManager.createSubtask(sub3);
+        inMemoryTaskManager.createSubtask(sub4);
 
         //start time for epic
         inMemoryTaskManager.getStartTimeForEpic(epicForCheck1);
@@ -180,8 +180,8 @@ public class Main {
         inMemoryTaskManager.getEndTimeForEpic(epicForCheck1);
 
         //prioritizedTask
-        System.out.println("Tasks " + inMemoryTaskManager.getTaskList());
-        System.out.println("Subtasks " + inMemoryTaskManager.getSubtaskList());
+        //System.out.println("Tasks " + inMemoryTaskManager.getTaskList());
+        //System.out.println("Subtasks " + inMemoryTaskManager.getSubtaskList());
         //System.out.println(inMemoryTaskManager.getPrioritizedTasks());
 
         //((FileBackedTaskManager) inMemoryTaskManager).save();
@@ -191,6 +191,22 @@ public class Main {
         ((FileBackedTaskManager) inMemoryTaskManager).save();
         FileBackedTaskManager.loadFromFile(path.toFile());
 
-        System.out.println("History2" + inMemoryTaskManager.getHistory());
+        //System.out.println("History2" + inMemoryTaskManager.getHistory());
+        //System.out.println(inMemoryTaskManager.getTaskList());
+
+        //System.out.println("@!!!!!!!!!!!" + inMemoryTaskManager.getSubtaskList());
+        Task task3 = new Task("Task3", "TaskDesc");
+        Task task4 = new Task("Task4", "TaskDesc");
+
+        inMemoryTaskManager.createTask(task3);
+        //inMemoryTaskManager.createTask(task4);
+        System.out.println(inMemoryTaskManager.getTaskList());
+        inMemoryTaskManager.updateTask(task3, task4);
+        System.out.println(inMemoryTaskManager.getTaskList());
+
+
+        //inMemoryTaskManager.createTask(task1);
+        // System.out.println(inMemoryTaskManager.getPrioritizedTasks());
+
     }
 }

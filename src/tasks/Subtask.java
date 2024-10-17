@@ -29,16 +29,6 @@ public class Subtask extends Task {
     }
 
     @Override
-    public Instant getStartTime() {
-        return startTime;
-    }
-
-    @Override
-    public void setStartTime(Instant startTime) {
-        this.startTime = startTime;
-    }
-
-    @Override
     public String toString() {
         if (getEndTime() == null) {
             return "tasks.Subtask{" +

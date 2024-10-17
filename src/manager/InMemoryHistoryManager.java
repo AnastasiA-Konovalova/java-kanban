@@ -11,7 +11,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node head;
     private Node tail;
     private Map<Integer, Node> mapOfTasks = new HashMap<>();
-    TaskManager taskManager;
 
     public InMemoryHistoryManager() {
 
@@ -28,11 +27,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void add(Task task) {
         if (task == null) {
-            return;
-        }
-        taskManager = Managers.getDefault();
-        if (taskManager.validateTask(task)) {
-            System.out.println("Задача пересекается с существующими задачами");
             return;
         }
         remove(task.getId());
