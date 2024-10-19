@@ -1,15 +1,20 @@
 package main;
 
+import manager.FileBackedTaskManager;
 import manager.InMemoryHistoryManager;
 import manager.InMemoryTaskManager;
-import save.FileBackedTaskManager;
-import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
 import tasks.Task;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.Month;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class Main {
 
@@ -20,114 +25,85 @@ public class Main {
         Path path = Path.of("saveTasksInfo.csv");
         InMemoryTaskManager inMemoryTaskManager = new FileBackedTaskManager(path);
 
+
+        //create instants for tasks
+        //1
+        ZoneId zoneId = ZoneId.of("Europe/Moscow");
+        LocalDateTime localDateTime = LocalDateTime.of(2024, Month.NOVEMBER, 4, 7, 1);
+        ZonedDateTime zonedDateTime = localDateTime.atZone(zoneId);
+        Instant instant = zonedDateTime.toInstant();
+        //2
+        ZoneId zoneId2 = ZoneId.of("Europe/Moscow");
+        LocalDateTime localDateTime2 = LocalDateTime.of(2024, Month.OCTOBER, 5, 8, 3);
+        ZonedDateTime zonedDateTime2 = localDateTime2.atZone(zoneId2);
+        Instant instant2 = zonedDateTime2.toInstant();
+        //3
+        ZoneId zoneId3 = ZoneId.of("Europe/Moscow");
+        LocalDateTime localDateTime3 = LocalDateTime.of(2024, Month.SEPTEMBER, 6, 9, 50);
+        ZonedDateTime zonedDateTime3 = localDateTime3.atZone(zoneId3);
+        Instant instant3 = zonedDateTime3.toInstant();
+
+        //4
+        ZoneId zoneId4 = ZoneId.of("Europe/Moscow");
+        LocalDateTime localDateTime4 = LocalDateTime.of(2024, Month.MARCH, 14, 5, 30);
+        ZonedDateTime zonedDateTime4 = localDateTime4.atZone(zoneId4);
+        Instant instant4 = zonedDateTime4.toInstant();
+
+        //5
+        ZoneId zoneId5 = ZoneId.of("Europe/Moscow");
+        LocalDateTime localDateTime5 = LocalDateTime.of(2024, Month.MAY, 10, 19, 00);
+        ZonedDateTime zonedDateTime5 = localDateTime5.atZone(zoneId5);
+        Instant instant5 = zonedDateTime5.toInstant();
+
         //tasks.Task
-        Task task1 = new Task("Task_1", "Go away");
-        Task task2 = new Task("Task_2", "Cook");
-        System.out.println("Create task1");
-        Task task3 = inMemoryTaskManager.createTask(task1);// create
-        System.out.println(task3);
-        System.out.println("Create task2");
-        Task task4 = inMemoryTaskManager.createTask(task2);
-        System.out.println(task4);
+        Task task1 = new Task("Task_1", "Go away", instant4, Duration.ofSeconds(7000));
+        Task task2 = new Task("Task_2", "Cook", instant5, Duration.ofSeconds(5000));
+        inMemoryTaskManager.createTask(task1);// create
+        inMemoryTaskManager.createTask(task2);
 
-        //inMemoryTaskManager.getByIdTask(1);
-        //inMemoryTaskManager.getByIdTask(2);
-
-        //taskManager.deleteAllTasks();
-
-        System.out.println("Change task1");
-        inMemoryTaskManager.updateTask(task3);
-        System.out.println("Change task2");
-        task4.setStatus(Status.IN_PROGRESS);
-        inMemoryTaskManager.updateTask(task4);
-
-        //inMemoryTaskManager.deleteTaskById(2);
-        System.out.println(inMemoryTaskManager.getTaskList());
-        System.out.println(task4);
+        //updateTask
+        //inMemoryTaskManager.updateTask(task1);
+        //inMemoryTaskManager.updateTask(task2);
 
 
         //tasks.Epic
-        Epic epic1 = new Epic("Travel", "Buy everything");
-        epic1.setName("Epic_1");
+        Epic epic1 = new Epic("Epic_1", "Buy everything");
         Epic epic2 = new Epic("Epic_2", "Cut carrot");
-        System.out.println("Create epic1");
         Epic epic3 = inMemoryTaskManager.createEpic(epic1);
-        System.out.println("Create task2");
         Epic epic4 = inMemoryTaskManager.createEpic(epic2);
 
-        //System.out.println(inMemoryTaskManager.getByIdEpic(3));
-        //taskManager.deleteAllEpics();
-
-        System.out.println("Change epic1");
-        inMemoryTaskManager.updateEpic(epic3);
-        System.out.println("Change epic2");
-        inMemoryTaskManager.updateEpic(epic4);
-
-        //taskManager.deleteEpicById(3);
-        System.out.println(inMemoryTaskManager.getEpicList());
-
+        //updateEpic
+//        inMemoryTaskManager.updateEpic(epic3);
+//        inMemoryTaskManager.updateEpic(epic4);
 
         //tasks.Subtask
         Subtask subtask1 = new Subtask("Subtask_1", "Plane", epic3);
         Subtask subtask2 = new Subtask("Subtask_2", "Reserve", epic4);
 
-        System.out.println("Создание подзадачи subtask1");
-        System.out.println(inMemoryTaskManager.createSubtask(subtask1));
-        System.out.println("Создание подзадачи subtask2");
-        System.out.println(inMemoryTaskManager.createSubtask(subtask2));
+        inMemoryTaskManager.createSubtask(subtask1);
+        inMemoryTaskManager.createSubtask(subtask2);
 
-        subtask1.setStatus(Status.IN_PROGRESS);
-        subtask2.setStatus(Status.IN_PROGRESS);
+        //updateSubtask
+        //inMemoryTaskManager.updateSubtask(subtask1);
+        //inMemoryTaskManager.updateSubtask(subtask2);
 
-        //inMemoryTaskManager.getByIdSubtask(subtask1.getId());
-        //taskManager.deleteAllSubtasks();
-
-        System.out.println("Change subtask1");
-        inMemoryTaskManager.updateSubtask(subtask1);
-        inMemoryTaskManager.getEpicList();
-        System.out.println("Change subtask2");
-        inMemoryTaskManager.updateSubtask(subtask2);
-
-        inMemoryTaskManager.getEpicList();
-
-        //taskManager.deleteSubtaskById(3);
-
-        //taskManager.showSubtask();
-        //taskManager.deleteAllSubtasks();
-        //taskManager.showEpic();
-        System.out.println("Show subtasks from tasks.Epic");
-        System.out.println(inMemoryTaskManager.getSubtaskFromEpic(epic3.getId()));
-        System.out.println();
-
-        //taskManager.deleteSubtaskById(6);
-        //проверка метода deleteEpicById();
-        System.out.println(inMemoryTaskManager.getEpicList());
-        //inMemoryTaskManager.deleteEpicById(3);
-        System.out.println(inMemoryTaskManager.getEpicList());
-        System.out.println(inMemoryTaskManager.getSubtaskList());
-
-        //проверка метода getSubtaskFromEpic (предварительно закомментировать taskManager.deleteEpicById(3);)
-        //System.out.println(taskManager.getSubtaskFromEpic(3));
 
         //................Проверка истории..............
         //открываем задачи
-        System.out.println("-------------------------------------------------------------------");
-//        inMemoryTaskManager.getByIdTask(1);
-//        inMemoryTaskManager.getByIdTask(2);
-//        inMemoryTaskManager.getByIdEpic(3);
-//        inMemoryTaskManager.getByIdEpic(4);
-//        inMemoryTaskManager.getByIdSubtask(5);
-//        inMemoryTaskManager.getByIdSubtask(6);
-//        inMemoryTaskManager.getByIdTask(1);
-//        inMemoryTaskManager.getByIdTask(2);
-//        inMemoryTaskManager.getByIdEpic(3);
-//        inMemoryTaskManager.getByIdEpic(4);
-//        inMemoryTaskManager.getByIdSubtask(5);
-//        inMemoryTaskManager.getByIdSubtask(6);
+        inMemoryTaskManager.getByIdTask(1);
+        inMemoryTaskManager.getByIdTask(2);
+        inMemoryTaskManager.getByIdEpic(3);
+        inMemoryTaskManager.getByIdEpic(4);
+        inMemoryTaskManager.getByIdSubtask(5);
+        inMemoryTaskManager.getByIdSubtask(6);
+        inMemoryTaskManager.getByIdTask(1);
+        inMemoryTaskManager.getByIdTask(2);
+        inMemoryTaskManager.getByIdEpic(3);
+        inMemoryTaskManager.getByIdEpic(4);
+        inMemoryTaskManager.getByIdSubtask(5);
+        inMemoryTaskManager.getByIdSubtask(6);
 
-        //inMemoryTaskManager.getHistory();
-
-
+        inMemoryTaskManager.getHistory();
 
         InMemoryHistoryManager historyManager = new InMemoryHistoryManager();
 
@@ -142,10 +118,10 @@ public class Main {
 //        historyManager.linkAddLast(epic1);
 //        historyManager.linkAddLast(task1);
         //System.out.println(historyManager.getTasks());
-//        System.out.println("History1" + inMemoryTaskManager.getHistory());
+        System.out.println("History1" + inMemoryTaskManager.getHistory());
 //        inMemoryTaskManager.deleteAllTasks();
-//        //inMemoryTaskManager.deleteTaskById(task1.getId());
-//        System.out.println("History2" + inMemoryTaskManager.getHistory());
+        //inMemoryTaskManager.deleteTaskById(task1.getId());
+        //System.out.println("History2" + inMemoryTaskManager.getHistory());
 //        List<Task> history = inMemoryTaskManager.getHistory();
 //        System.out.println(history.size());
 ////просмотренные задачи (удаление всех)
@@ -177,9 +153,60 @@ public class Main {
 //        historyManager.add(task2);
 //        System.out.println(historyManager.getHistory());
 
-        //Path path = Path.of("saveTasksInfo.csv");
+
+        //saveFunction
+        // Path path = Path.of("saveTasksInfo.csv");
         //FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(path);
-        ((FileBackedTaskManager) inMemoryTaskManager).save();
+
+
+        System.out.println("______DateTime___________");
+        //LocalDateTime, Instant, Duration
+        Epic epicForCheck1 = new Epic("NameOfEpicForCheck1", "Deck");
+        inMemoryTaskManager.createEpic(epicForCheck1);
+        //Subtask sub1 = new Subtask("Sub1", "Dedc", epicForCheck1, instant, Duration.ofHours(3));
+        Subtask sub3 = new Subtask("Subtask_3", "Dedc3", epicForCheck1, instant2, Duration.ofMinutes(50));
+        Subtask sub4 = new Subtask("Subtask_4", "Dedc4", epicForCheck1, instant3, Duration.ofMinutes(30));
+        // inMemoryTaskManager.createSubtask(sub1);
+        inMemoryTaskManager.createSubtask(sub3);
+        inMemoryTaskManager.createSubtask(sub4);
+
+        //start time for epic
+        inMemoryTaskManager.getStartTimeForEpic(epicForCheck1);
+
+        //duration for epic
+        inMemoryTaskManager.getDurationForEpic(epicForCheck1);
+
+        //endTime
+        inMemoryTaskManager.getEndTimeForEpic(epicForCheck1);
+
+        //prioritizedTask
+        //System.out.println("Tasks " + inMemoryTaskManager.getTaskList());
+        //System.out.println("Subtasks " + inMemoryTaskManager.getSubtaskList());
+        //System.out.println(inMemoryTaskManager.getPrioritizedTasks());
+
+        //((FileBackedTaskManager) inMemoryTaskManager).save();
+        //FileBackedTaskManager.loadFromFile(path.toFile());
+
+        //loading
+        //((FileBackedTaskManager) inMemoryTaskManager).save();
         FileBackedTaskManager.loadFromFile(path.toFile());
+
+        //System.out.println("History2" + inMemoryTaskManager.getHistory());
+        //System.out.println(inMemoryTaskManager.getTaskList());
+
+        //System.out.println("@!!!!!!!!!!!" + inMemoryTaskManager.getSubtaskList());
+        Task task3 = new Task("Task3", "TaskDesc");
+        Task task4 = new Task("Task4", "TaskDesc");
+
+        inMemoryTaskManager.createTask(task3);
+        //inMemoryTaskManager.createTask(task4);
+        System.out.println(inMemoryTaskManager.getTaskList());
+        inMemoryTaskManager.updateTask(task4);
+        System.out.println(inMemoryTaskManager.getTaskList());
+
+
+        //inMemoryTaskManager.createTask(task1);
+        // System.out.println(inMemoryTaskManager.getPrioritizedTasks());
+
     }
 }
