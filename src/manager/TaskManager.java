@@ -33,11 +33,11 @@ public interface TaskManager {
 
     Subtask getByIdSubtask(Integer id);
 
-    void updateTask(Task task, Task updateTasks);
+    void updateTask(Task updateTasks);
 
     void updateEpic(Epic updateEpic);
 
-    void updateSubtask(Subtask subtask, Subtask updateSubtask);
+    void updateSubtask(Subtask updateSubtask);
 
     void deleteTaskById(Integer id);
 

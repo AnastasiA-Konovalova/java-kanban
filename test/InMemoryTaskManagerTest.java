@@ -110,14 +110,16 @@ class InMemoryTaskManagerTest {
     @Test
     void testGetPrioritizedSubtask() {
         taskManager.createEpic(epic_2);
-        taskManager.createSubtask(subtask_2);
-        taskManager.createSubtask(subtask_3);
         taskManager.createSubtask(subtask_4);
+        taskManager.createSubtask(subtask_5);
+        taskManager.createSubtask(subtask_6);
+
+        System.out.println(epic_2);
 
         List<Task> sortedList = taskManager.getPrioritizedTasks();
 
-        assertEquals(2, sortedList.size());
-        assertEquals(subtask_3, sortedList.get(1));
+        assertEquals(3, sortedList.size());
+        assertEquals(subtask_4, sortedList.get(1));
     }
 
     @Test
@@ -260,9 +262,9 @@ class InMemoryTaskManagerTest {
     @Test
     void testUpdateTask() {
         taskManager.createTask(task_1);
-        Task task_3 = new Task("NameTask_3", "DescriptionTask_3", instant_2, Duration.ofSeconds(4000));
-
-        taskManager.updateTask(task_1, task_3);
+        Task updateTasks = new Task("NameTask_3", "DescriptionTask_3", instant_2, Duration.ofSeconds(4000));
+        updateTasks.setId(task_1.getId());
+        taskManager.updateTask(updateTasks);
 
         assertEquals(1, taskManager.getTaskList().size());
         assertEquals("NameTask_3", taskManager.getTaskList().get(0).getName());
@@ -292,14 +294,16 @@ class InMemoryTaskManagerTest {
         taskManager.createEpic(epic_2);
         taskManager.createSubtask(subtask_5);
 
-        taskManager.updateSubtask(subtask_5, subtask_6);
+        Subtask updateSubtasks = new Subtask("NameSubtask_6", "DescriptionSubtask_6", epic_2, instant_1, Duration.ofSeconds(80));
+        updateSubtasks.setId(subtask_5.getId());
+        taskManager.updateSubtask(updateSubtasks);
 
         assertEquals(1, taskManager.getSubtaskList().size());
         assertEquals("NameSubtask_6", taskManager.getSubtaskList().get(0).getName());
         assertEquals("DescriptionSubtask_6", taskManager.getSubtaskList().get(0).getDescription());
         assertEquals("2024-12-15T12:10:00Z", taskManager.getSubtaskList().get(0).getStartTime().toString());
-        assertEquals("PT13M20S", taskManager.getSubtaskList().get(0).getDuration().toString());
-        assertEquals("2024-12-15T12:23:20Z", taskManager.getSubtaskList().get(0).getEndTime().toString());
+        assertEquals("PT1M20S", taskManager.getSubtaskList().get(0).getDuration().toString());
+        assertEquals("2024-12-15T12:11:20Z", taskManager.getSubtaskList().get(0).getEndTime().toString());
     }
 
     @Test
@@ -432,19 +436,6 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
-    public void testGetStartTimeForEpic() {
-        inMemoryTaskManager.createEpic(epic_2);
-        inMemoryTaskManager.createSubtask(subtask_4);
-        inMemoryTaskManager.createSubtask(subtask_5);
-        inMemoryTaskManager.createSubtask(subtask_6);
-
-        Instant instant = inMemoryTaskManager.getStartTimeForEpic(epic_2);
-
-        assertEquals("2024-04-10T07:00:00Z", instant.toString());
-    }
-
-
-    @Test
     public void testDeleteAllTask() {
         taskManager.createTask(task_1);
         taskManager.createTask(task_2);
@@ -469,7 +460,7 @@ class InMemoryTaskManagerTest {
     @Test
     public void testDeleteAllSubtask() {
         taskManager.createEpic(epic_2);
-        taskManager.createSubtask(subtask_3);
+        System.out.println(taskManager.getEpicList());
         taskManager.createSubtask(subtask_4);
         taskManager.createSubtask(subtask_5);
 
@@ -495,13 +486,25 @@ class InMemoryTaskManagerTest {
     }
 
     @Test
+    public void testGetStartTimeForEpic() {
+        inMemoryTaskManager.createEpic(epic_2);
+        inMemoryTaskManager.createSubtask(subtask_4);
+        inMemoryTaskManager.createSubtask(subtask_5);
+        inMemoryTaskManager.createSubtask(subtask_6);
+
+        Instant startTime = epic_2.getStartTime();
+
+        assertEquals("2024-04-10T07:00:00Z", startTime.toString());
+    }
+
+    @Test
     public void testGetDurationForEpic() {
         inMemoryTaskManager.createEpic(epic_2);
         inMemoryTaskManager.createSubtask(subtask_4);
         inMemoryTaskManager.createSubtask(subtask_5);
         inMemoryTaskManager.createSubtask(subtask_6);
 
-        Duration duration = inMemoryTaskManager.getDurationForEpic(epic_2);
+        Duration duration = epic_2.getDuration();
 
         assertEquals("PT18H50M", duration.toString());
     }
@@ -513,9 +516,9 @@ class InMemoryTaskManagerTest {
         inMemoryTaskManager.createSubtask(subtask_5);
         inMemoryTaskManager.createSubtask(subtask_6);
 
-        Instant instant = inMemoryTaskManager.getEndTimeForEpic(epic_2);
+        Instant endTime = epic_2.getEndTime();
 
-        assertEquals("2024-12-15T12:23:20Z", instant.toString());
+        assertEquals("2024-12-15T12:23:20Z", endTime.toString());
     }
 
     @Test
@@ -546,7 +549,7 @@ class InMemoryTaskManagerTest {
         inMemoryTaskManager.createEpic(epic_2);
         inMemoryTaskManager.createSubtask(subtask_5);
 
-        boolean validate_2 = inMemoryTaskManager.validateTask(inMemoryTaskManager.createSubtask(subtask_4));
+        boolean validate_2 = !inMemoryTaskManager.validateTask(inMemoryTaskManager.createSubtask(subtask_4));
 
         assertFalse(false, String.valueOf(validate_2));
     }

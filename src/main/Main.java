@@ -188,7 +188,7 @@ public class Main {
         //FileBackedTaskManager.loadFromFile(path.toFile());
 
         //loading
-        ((FileBackedTaskManager) inMemoryTaskManager).save();
+        //((FileBackedTaskManager) inMemoryTaskManager).save();
         FileBackedTaskManager.loadFromFile(path.toFile());
 
         //System.out.println("History2" + inMemoryTaskManager.getHistory());
@@ -201,7 +201,7 @@ public class Main {
         inMemoryTaskManager.createTask(task3);
         //inMemoryTaskManager.createTask(task4);
         System.out.println(inMemoryTaskManager.getTaskList());
-        inMemoryTaskManager.updateTask(task3, task4);
+        inMemoryTaskManager.updateTask(task4);
         System.out.println(inMemoryTaskManager.getTaskList());
 
 

@@ -1,7 +1,7 @@
-import exeption.ManagerSaveException;
+import exeptions.ManagerSaveException;
+import manager.FileBackedTaskManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import manager.FileBackedTaskManager;
 import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
@@ -64,7 +64,7 @@ class FileBackedTaskManagerTest {
         task_1 = new Task("NameTask_1", "DescriptionTask_1");
         task_2 = new Task("NameTask_2", "DescriptionTask_2");
         task_3 = new Task("NameTask_3", "DescriptionTask_3", instant_1, Duration.ofSeconds(7000));
-        task_4 = new Task("NameTask_4", "DescriptionTask_4",instant_2, Duration.ofSeconds(13000));
+        task_4 = new Task("NameTask_4", "DescriptionTask_4", instant_2, Duration.ofSeconds(13000));
         epic_1 = new Epic("NameEpic_1", "DescriptionEpic_1");
         epic_2 = new Epic("NameEpic_2", "DescriptionEpic_2");
         subtask_1 = new Subtask("NameSubtask_1", "DescriptionSubtask_1", epic_1);
@@ -259,7 +259,6 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createTask(task_3);
         fileBackedTaskManager.createTask(task_4);
 
-        fileBackedTaskManager.save();
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Task> taskList1 = fileBackedTaskManager.getTaskList();
@@ -278,7 +277,6 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createEpic(epic_1);
         fileBackedTaskManager.createEpic(epic_2);
 
-        fileBackedTaskManager.save();
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Epic> epicList1 = fileBackedTaskManager.getEpicList();
@@ -292,17 +290,18 @@ class FileBackedTaskManagerTest {
 
     @Test
     public void testSaveAndLoadSubtasks() throws IOException {
-        File tmpFile = File.createTempFile("data", null);
-        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager(tmpFile.toString());
+        File tmpFile = new File("saveTasksInfo.csv");
+        FileBackedTaskManager fileBackedTaskManager = new FileBackedTaskManager("saveTasksInfo.csv");
         fileBackedTaskManager.createEpic(epic_1);
         fileBackedTaskManager.createSubtask(subtask_1);
         fileBackedTaskManager.createSubtask(subtask_3);
 
-        fileBackedTaskManager.save();
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         List<Subtask> subtaskList1 = fileBackedTaskManager.getSubtaskList();
         List<Subtask> subtaskList2 = actualFileManager.getSubtaskList();
+        System.out.println(subtaskList1);
+        System.out.println(subtaskList2);
 
         assertEquals(subtaskList1.size(), subtaskList2.size());
         assertEquals(subtaskList1.get(0).getEpic(), subtaskList2.get(0).getEpic());
@@ -320,7 +319,6 @@ class FileBackedTaskManagerTest {
         fileBackedTaskManager.createSubtask(subtask_2);
         fileBackedTaskManager.createSubtask(subtask_3);
 
-        fileBackedTaskManager.save();
         FileBackedTaskManager actualFileManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
         Epic loadedEpic = actualFileManager.getByIdEpic(epic_1.getId());
@@ -334,19 +332,17 @@ class FileBackedTaskManagerTest {
     @Test
     public void testSaveAndLoadEmptyFile() throws IOException {
         File tmpFile = File.createTempFile("data", null);
-        FileBackedTaskManager emptyFile = new FileBackedTaskManager(tmpFile.toString());
+        FileBackedTaskManager taskManager = new FileBackedTaskManager(tmpFile.toString());
 
-        emptyFile.save();
+        assertTrue(taskManager.getTaskList().isEmpty());
+        assertTrue(taskManager.getEpicList().isEmpty());
+        assertTrue(taskManager.getSubtaskList().isEmpty());
 
-        assertTrue(emptyFile.getTaskList().isEmpty());
-        assertTrue(emptyFile.getEpicList().isEmpty());
-        assertTrue(emptyFile.getSubtaskList().isEmpty());
+        taskManager = FileBackedTaskManager.loadFromFile(tmpFile);
 
-        emptyFile = FileBackedTaskManager.loadFromFile(tmpFile);
-
-        assertTrue(emptyFile.getTaskList().isEmpty());
-        assertTrue(emptyFile.getEpicList().isEmpty());
-        assertTrue(emptyFile.getSubtaskList().isEmpty());
+        assertTrue(taskManager.getTaskList().isEmpty());
+        assertTrue(taskManager.getEpicList().isEmpty());
+        assertTrue(taskManager.getSubtaskList().isEmpty());
     }
 
     @Test

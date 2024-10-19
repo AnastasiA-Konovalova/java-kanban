@@ -1,6 +1,6 @@
 package manager;
 
-import exeption.ManagerSaveException;
+import exeptions.ManagerSaveException;
 import status.Status;
 import tasks.Epic;
 import tasks.Subtask;
@@ -31,7 +31,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         this.path = path;
     }
 
-    public void save() {
+    private void save() {
         try (FileWriter fileWriter = new FileWriter(path.toFile())) {
             fileWriter.write("id,type,name,status,description,startTime,duration,endTime,epic\n");
             taskMap.values()
@@ -45,11 +45,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             subtaskMap.values().forEach(ThrowableConsumer.of(
                     item -> {
                         StringBuilder sb = appendItemsToFile(item);
-                        sb.append(",").append(item.getStartTime()).append(",");
-                        sb.append(item.getDuration()).append(",");
-                        sb.append(item.getEndTime()).append(",");
                         sb.append(item.getEpic().getId()).append("\n");
-
                         fileWriter.write(sb.toString());
                     },
                     ex -> new ManagerSaveException("Ошибка в чтении задачи формата subtask")
@@ -67,11 +63,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 .append(item.getStatus().toString()).append(",")
                 .append(item.getDescription());
 
-        if (item.getClass().getSimpleName().equals("Task") && item.getStartTime() != null) {
+        if ((item.getClass().getSimpleName().equalsIgnoreCase("Task")
+                || item.getClass().getSimpleName().equalsIgnoreCase("Epic"))
+                && item.getStartTime() != null) {
             sb.append("," + item.getStartTime()).append(",");
             sb.append(item.getDuration()).append(",");
             sb.append(item.getEndTime()).append("\n");
-        } else if (!item.getClass().getSimpleName().equals("Subtask") && item.getStartTime() == null) {
+        } else if (item.getClass().getSimpleName().equals("Subtask")) {
+            sb.append(",").append(item.getStartTime()).append(",");
+            sb.append(item.getDuration()).append(",");
+            sb.append(item.getEndTime()).append(",");
+        } else if (item.getStartTime() == null) {
             sb.append("\n");
         }
         return sb;
@@ -85,6 +87,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             bufferedReader.lines().forEach(readFile::add);
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка загрузки файла " + e.getMessage());
+        }
+
+        if (readFile.isEmpty()) {
+            return taskManager;
         }
 
         readFile.remove(0);
@@ -151,7 +157,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return taskManager;
     }
 
-    public static void loadStartTimeAndDuration(Task task, String[] split) {
+    private static void loadStartTimeAndDuration(Task task, String[] split) {
         String startTime = "";
         String duration = "";
         if (split.length > 5) {
@@ -223,8 +229,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateTask(Task oldTask, Task updateTasks) {
-        super.updateTask(oldTask, updateTasks);
+    public void updateTask(Task updateTasks) {
+        super.updateTask(updateTasks);
         save();
     }
 
@@ -235,8 +241,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void updateSubtask(Subtask subtask, Subtask updateSubtask) {
-        super.updateSubtask(subtask, updateSubtask);
+    public void updateSubtask(Subtask updateSubtask) {
+        super.updateSubtask(updateSubtask);
         save();
     }
 }
