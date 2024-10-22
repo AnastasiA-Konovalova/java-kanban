@@ -2,11 +2,18 @@ package tasks;
 
 import status.Status;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Epic extends Task {
     private List<Integer> idSubtask;
+
+    public void setEndTime(Instant endTime) {
+        this.endTime = endTime;
+    }
+
+    private Instant endTime;
 
     public Epic(String name, String descriptions) {
         super(name, descriptions);
@@ -34,8 +41,18 @@ public class Epic extends Task {
         setStatus(Status.NEW);
     }
 
-    public void deleteSubtaskById(Subtask subtask) {
-        idSubtask.remove(subtask.getId());
+    public void removeSubtask(Subtask subtask) {
+        for (int i = 0; i < idSubtask.size(); i++) {
+            if (idSubtask.get(i) == subtask.getId()) {
+                idSubtask.remove(i);
+                return;
+            }
+        }
+    }
+
+    @Override
+    public Instant getEndTime() {
+        return endTime;
     }
 
     @Override
