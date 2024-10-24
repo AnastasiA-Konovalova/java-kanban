@@ -1,5 +1,7 @@
 package tasks;
 
+import status.Status;
+
 import java.time.Duration;
 import java.time.Instant;
 
@@ -17,7 +19,7 @@ public class Subtask extends Task {
     }
 
     public Subtask() {
-
+        this.status = Status.NEW;
     }
 
     public Epic getEpic() {

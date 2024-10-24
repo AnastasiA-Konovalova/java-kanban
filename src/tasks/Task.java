@@ -15,7 +15,8 @@ public class Task {
     protected int id;
     protected Duration duration;
     protected Instant startTime;
-    protected DateTimeFormatter formatter;
+    protected static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.HH:mm");
+
 
     public Task(String name, String description) {
         this.name = name;
@@ -29,11 +30,11 @@ public class Task {
         this.status = Status.NEW;
         this.duration = duration;
         this.startTime = startTime;
-        formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.HH:mm");
+        //formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy.HH:mm");
     }
 
     public Task() {
-
+        this.status = Status.NEW;
     }
 
     public String getName() {

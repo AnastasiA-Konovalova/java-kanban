@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    private Path path;
+    private final Path path;
 
     public FileBackedTaskManager(String fileName) {
         this(Paths.get(fileName));
@@ -95,8 +95,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
         readFile.remove(0);
         int maxId = 1;
-        for (int i = 0; i < readFile.size(); i++) {
-            String[] split = readFile.get(i).split(",");
+        for (String s : readFile) {
+            String[] split = s.split(",");
             int id = Integer.parseInt(split[0]);
             if (maxId < id) {
                 maxId = id;
@@ -211,21 +211,24 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     @Override
-    public void deleteTaskById(Integer id) {
-        super.deleteTaskById(id);
+    public Task deleteTaskById(Integer id) {
+        Task task = super.deleteTaskById(id);
         save();
+        return task;
     }
 
     @Override
-    public void deleteEpicById(Integer id) {
-        super.deleteEpicById(id);
+    public Epic deleteEpicById(Integer id) {
+        Epic epic = super.deleteEpicById(id);
         save();
+        return epic;
     }
 
     @Override
-    public void deleteSubtaskById(Integer id) {
-        super.deleteSubtaskById(id);
+    public Subtask deleteSubtaskById(Integer id) {
+        Subtask subtask = super.deleteSubtaskById(id);
         save();
+        return subtask;
     }
 
     @Override
