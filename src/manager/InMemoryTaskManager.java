@@ -68,7 +68,7 @@ public class InMemoryTaskManager implements TaskManager {
         if (epicTask.getName() == null || epicTask.getName().equals("null")) {
             throw new ManagerNotContainTaskException("Имя не должно быть null");
         }
-        if (epicTask.getDescription() == null|| epicTask.getDescription().equals("null")) {
+        if (epicTask.getDescription() == null || epicTask.getDescription().equals("null")) {
             throw new ManagerNotContainTaskException("Описание не должно быть null");
         }
         epicTask.setId(id++);
