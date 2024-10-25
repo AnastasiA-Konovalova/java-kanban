@@ -30,11 +30,10 @@ public class HttpTaskServer {
         httpServer.createContext("/history", new HistoryHandler());
         httpServer.createContext("/prioritized", new PrioritizedHandler());
         httpServer.start();
-        stop();
     }
 
     public static void stop() {
         System.out.println("Уведомление о закрытии порта");
-        //httpServer.stop(1);
+        httpServer.stop(1);
     }
 }
