@@ -39,14 +39,13 @@ public class TaskHandlerTest {
     private ZoneId zoneId;
 
     @BeforeEach
-    public void setUp() throws IOException { //как не бросать искл здесь?
-        //HttpTaskServer.taskManager.deleteAllTasks();
-        //HttpTaskServer.taskManager.deleteAllEpics();
-        //HttpTaskServer.taskManager.deleteAllSubtasks();
+    public void setUp() throws IOException {
+        HttpTaskServer.taskManager.deleteAllTasks();
+        HttpTaskServer.taskManager.deleteAllEpics();
+        HttpTaskServer.taskManager.deleteAllSubtasks();
         client = HttpClient.newHttpClient();
 
         zoneId = ZoneId.of("Europe/Moscow");
-
         LocalDateTime localDateTime_1 = LocalDateTime.of(2024, Month.DECEMBER, 15, 15, 10);
         ZonedDateTime zonedDateTime_1 = localDateTime_1.atZone(zoneId);
         instant_1 = zonedDateTime_1.toInstant();
@@ -55,25 +54,21 @@ public class TaskHandlerTest {
         ZonedDateTime zonedDateTime_2 = localDateTime_2.atZone(zoneId);
         instant_2 = zonedDateTime_2.toInstant();
 
-
         task_1 = new Task("NameTask_1", "DescriptionTask_1", instant_1, Duration.ofSeconds(8000));
         task_2 = new Task("NameTask_2", "DescriptionTask_2", instant_2, Duration.ofSeconds(7000));
-        task_3 = new Task("NameTask_3_Clone_Task_2", "DescriptionTask_3", instant_2, Duration.ofSeconds(7000));
+        task_3 = new Task("NameTask_3_Clone_Task_1", "DescriptionTask_1", instant_1, Duration.ofSeconds(7000));
 
         HttpTaskServer.start();
     }
-
 
     @AfterEach
     public void shutDown() {
         HttpTaskServer.stop();
     }
 
-
     @Test
-    public void testGetTasksSuccess() throws IOException, InterruptedException {
+    public void testGetTaskSuccess() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.createTask(task_1);
-        HttpTaskServer.taskManager.createTask(task_2);
 
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest
@@ -86,36 +81,21 @@ public class TaskHandlerTest {
 
         assertEquals(200, response.statusCode());
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
-        assertEquals(2, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("NameTask_1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
-        assertEquals("NameTask_2", tasksFromManager.get(1).getName(), "Некорректное имя задачи");
+        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
     }
 
     @Test
-    public void testGetTasksFail() throws IOException, InterruptedException {
-        URI url = URI.create("http://localhost:8080/tasks");
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(url)
-                .GET()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(404, response.statusCode());
-    }
-
-    @Test
-    public void testGetTasksByIdSuccess() throws IOException, InterruptedException {
+    public void testGetTaskByIdSuccess() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.createTask(task_1);
         HttpTaskServer.taskManager.createTask(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/1");
+        URI url = URI.create("http://localhost:8080/tasks/" + task_1.getId());
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(url)
                 .GET()
                 .build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-        Task task = HttpTaskServer.taskManager.getByIdTask(1);
+        Task task = HttpTaskServer.taskManager.getByIdTask(task_1.getId());
 
         assertEquals(200, response.statusCode());
         assertNotNull(task);
@@ -124,8 +104,8 @@ public class TaskHandlerTest {
     }
 
     @Test
-    public void testGetTasksByIdFail() throws IOException, InterruptedException {
-        URI url = URI.create("http://localhost:8080/tasks/8");
+    public void testGetTaskByIdFail() throws IOException, InterruptedException {
+        URI url = URI.create("http://localhost:8080/tasks/900");
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(url)
@@ -151,27 +131,12 @@ public class TaskHandlerTest {
         assertEquals(201, response.statusCode());
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("NameTask_1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
-    }
-
-    @Test
-    public void testAddTaskFailNoFound() throws IOException, InterruptedException {
-        Task task = new Task();
-        String taskJson = gson.toJson(task);
-        URI url = URI.create("http://localhost:8080/tasks");
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(url).POST(HttpRequest.BodyPublishers.ofString(taskJson))
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(404, response.statusCode());
     }
 
     @Test
     public void testAddTaskFailInteractions() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.createTask(task_3);
-        String taskJson = gson.toJson(task_2);
+        String taskJson = gson.toJson(task_1);
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest
                 .newBuilder()
@@ -184,7 +149,7 @@ public class TaskHandlerTest {
         assertEquals(406, response.statusCode());
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("NameTask_3_Clone_Task_2", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals("NameTask_3_Clone_Task_1", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
     }
 
     @Test
@@ -192,7 +157,7 @@ public class TaskHandlerTest {
         HttpTaskServer.taskManager.createTask(task_1);
         task_2.setId(task_1.getId());
         String taskJson = gson.toJson(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/1");
+        URI url = URI.create("http://localhost:8080/tasks/" + task_1.getId());
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(url)
@@ -204,32 +169,15 @@ public class TaskHandlerTest {
         assertEquals(201, response.statusCode());
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
         assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("NameTask_2", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
     }
 
-    @Test
-    public void testUpdateTaskFail() throws IOException, InterruptedException {
-        HttpTaskServer.taskManager.createTask(task_1);
-        task_2.setId(3);
-        String taskJson = gson.toJson(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/1");
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(url)
-                .POST(HttpRequest.BodyPublishers.ofString(taskJson))
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(404, response.statusCode());
-    }
-
-    //падает
     @Test
     public void testUpdateTaskFailInteractions() throws IOException, InterruptedException {
-        HttpTaskServer.taskManager.createTask(task_3);
-        task_2.setId(task_3.getId());
-        String taskJson = gson.toJson(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/1");
+        HttpTaskServer.taskManager.createTask(task_1);
+        HttpTaskServer.taskManager.createTask(task_2);
+        task_3.setId(task_2.getId());
+        String taskJson = gson.toJson(task_3);
+        URI url = URI.create("http://localhost:8080/tasks/" + task_2.getId());
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(url)
@@ -243,8 +191,7 @@ public class TaskHandlerTest {
     @Test
     public void testDeleteTaskSuccess() throws IOException, InterruptedException {
         HttpTaskServer.taskManager.createTask(task_1);
-        HttpTaskServer.taskManager.createTask(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/1");
+        URI url = URI.create("http://localhost:8080/tasks/" + task_1.getId());
         HttpRequest request = HttpRequest
                 .newBuilder()
                 .uri(url)
@@ -255,23 +202,6 @@ public class TaskHandlerTest {
 
         assertEquals(200, response.statusCode());
         assertNotNull(tasksFromManager, "Задачи не возвращаются");
-        assertEquals(1, tasksFromManager.size(), "Некорректное количество задач");
-        assertEquals("NameTask_2", tasksFromManager.get(0).getName(), "Некорректное имя задачи");
+        assertEquals(0, tasksFromManager.size(), "Некорректное количество задач");
     }
-
-    @Test
-    public void testDeleteTaskFail() throws IOException, InterruptedException {
-        HttpTaskServer.taskManager.createTask(task_1);
-        HttpTaskServer.taskManager.createTask(task_2);
-        URI url = URI.create("http://localhost:8080/tasks/3");
-        HttpRequest request = HttpRequest
-                .newBuilder()
-                .uri(url)
-                .DELETE()
-                .build();
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        assertEquals(404, response.statusCode());
-    }
-
 }

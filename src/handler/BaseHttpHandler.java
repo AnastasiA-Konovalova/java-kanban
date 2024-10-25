@@ -20,7 +20,7 @@ public class BaseHttpHandler {
 
     protected void sendText(HttpExchange exchange, String text) throws IOException {
         if (text.isEmpty() || text.equals("null")) {
-            sendNotFound(exchange);
+            sendInternalServerError(exchange);
             return;
         }
         byte[] resp = text.getBytes(StandardCharsets.UTF_8);
@@ -28,41 +28,26 @@ public class BaseHttpHandler {
         exchange.sendResponseHeaders(200, resp.length);
         exchange.getResponseBody().write(resp);
         exchange.close();
-
-        // TODO: 22.10.2024 убрать уведомление перед отправкой на ревью
-        System.out.println("Code 200");
     }
 
     protected void sendSuccessEmptyVoid(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(201, 0);
         exchange.close();
-
-        // TODO: 22.10.2024 убрать уведомление перед отправкой на ревью
-        System.out.println("Code 201");
     }
 
     protected void sendNotFound(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(404, 0);
         exchange.close();
-
-        // TODO: 22.10.2024 убрать уведомление перед отправкой на ревью
-        System.out.println("Code 404");
     }
 
     protected void sendHasInteractions(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(406, 0);
         exchange.close();
-
-        // TODO: 22.10.2024 убрать уведомление перед отправкой на ревью
-        System.out.println("Code 406");
     }
 
     protected void sendInternalServerError(HttpExchange exchange) throws IOException {
         exchange.sendResponseHeaders(500, 0);
         exchange.close();
-
-        // TODO: 22.10.2024 убрать уведомление перед отправкой на ревью
-        System.out.println("Code 500");
     }
 
     protected Task inputStreamToTask(HttpExchange exchange) throws IOException {
@@ -74,7 +59,7 @@ public class BaseHttpHandler {
             return gson.fromJson(bodyString, Task.class);
 
         } catch (IOException exc) {
-            throw new IOException(); //может другое исключ кидать? из созданных мной
+            throw new IOException();
         }
     }
 

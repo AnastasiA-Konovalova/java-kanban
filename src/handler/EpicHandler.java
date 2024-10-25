@@ -35,6 +35,15 @@ public class EpicHandler extends TasksHandler {
                     } catch (Exception e) {
                         sendInternalServerError(exchange);
                     }
+                } else if (path.matches("/epics/\\d+/subtasks")) {
+                    try {
+                        String jsonFormatEpic = gson.toJson(taskManager.getSubtaskFromEpic(Integer.valueOf(split[2])));
+                        sendText(exchange, jsonFormatEpic);
+                    } catch (ManagerNotContainTaskException e) {
+                        sendNotFound(exchange);
+                    } catch (Exception e) {
+                        sendInternalServerError(exchange);
+                    }
                 }
                 break;
             case "POST":
@@ -42,15 +51,6 @@ public class EpicHandler extends TasksHandler {
                     try {
                         gson.toJson(taskManager.createEpic(inputStreamToEpic(exchange)));
                         sendSuccessEmptyVoid(exchange);
-                    } catch (Exception e) {
-                        sendInternalServerError(exchange);
-                    }
-                } else if (path.matches("/epics/\\d+")) {
-                    try {
-                        taskManager.updateEpic(inputStreamToEpic(exchange));
-                        sendSuccessEmptyVoid(exchange);
-                    } catch (ManagerNotContainTaskException exc) {
-                        sendNotFound(exchange);
                     } catch (Exception e) {
                         sendInternalServerError(exchange);
                     }

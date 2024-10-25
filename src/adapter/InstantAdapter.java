@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 
 public class InstantAdapter extends TypeAdapter<Instant> {
 
@@ -26,16 +25,7 @@ public class InstantAdapter extends TypeAdapter<Instant> {
             jsonReader.nextNull();
             return null;
         }
-        String instantString = jsonReader.nextString(); // Чтение строки
-        return Instant.parse(instantString); // Преобразование строки в Instant
+        String instantString = jsonReader.nextString();
+        return Instant.parse(instantString);
     }
 }
-
-//    @Override
-//    public Instant read(JsonReader in) throws IOException {
-//        if (in.peek() == JsonToken.NULL) {
-//            in.nextNull();
-//            return null;
-//        }
-//        return new Instant(in.nextString());
-//    }

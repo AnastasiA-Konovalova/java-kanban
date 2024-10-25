@@ -36,7 +36,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(Integer id) {
         if (!mapOfTasks.containsKey(id)) {
-            System.out.println("История не содердит такого id");
+            System.out.println("История не содержит такого id");
             return;
         }
         Node node = mapOfTasks.get(id);

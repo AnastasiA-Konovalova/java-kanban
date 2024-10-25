@@ -62,8 +62,8 @@ public class SubtaskHandler extends TasksHandler {
             case "DELETE":
                 if (path.matches("/subtasks/\\d+")) {
                     try {
-                        taskManager.deleteSubtaskById(Integer.valueOf(split[2]));
-                        sendSuccessEmptyVoid(exchange);
+                        String subtask = gson.toJson(taskManager.deleteSubtaskById(Integer.valueOf(split[2])));
+                        sendText(exchange, subtask);
                     } catch (Exception e) {
                         sendInternalServerError(exchange);
                     }
@@ -73,5 +73,4 @@ public class SubtaskHandler extends TasksHandler {
                 sendInternalServerError(exchange);
         }
     }
-
 }

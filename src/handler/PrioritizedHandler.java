@@ -3,7 +3,6 @@ package handler;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
-import exeptions.ManagerNotContainTaskException;
 
 import java.io.IOException;
 
@@ -18,12 +17,11 @@ public class PrioritizedHandler extends BaseHttpHandler implements HttpHandler {
         Gson gson = getGsonAdapt();
 
         if ("GET".equals(method) && path.equals("/prioritized")) {
-            // TODO: 23.10.2024 вынести try catch в отдельный метод
             try {
                 String jsonFormatTask = gson.toJson(taskManager.getPrioritizedTasks());
                 sendText(exchange, jsonFormatTask);
-            } catch (IOException | ManagerNotContainTaskException exc) {
-                sendNotFound(exchange);
+            } catch (Exception e) {
+                sendInternalServerError(exchange);
             }
             return;
         }
