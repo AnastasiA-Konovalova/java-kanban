@@ -451,7 +451,7 @@ class InMemoryTaskManagerTest {
         taskManager.createTask(task_1);
         taskManager.createTask(task_2);
 
-        taskManager.deleteTaskById(1);
+        taskManager.deleteTaskById(task_1.getId());
 
         assertEquals(0, taskManager.getPrioritizedTasks().size());
         assertEquals(1, taskManager.getTaskList().size());
