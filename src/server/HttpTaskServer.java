@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 
 public class HttpTaskServer {
-    private final static int PORT = 8080;
     private static HttpServer httpServer;
     public static TaskManager taskManager = Managers.getDefault();
 
@@ -23,7 +22,7 @@ public class HttpTaskServer {
     }
 
     public static void start() throws IOException {
-        httpServer = HttpServer.create(new InetSocketAddress(PORT), 0);
+        httpServer = HttpServer.create(new InetSocketAddress(8080), 0);
         httpServer.createContext("/tasks", new TasksHandler());
         httpServer.createContext("/epics", new EpicHandler());
         httpServer.createContext("/subtasks", new SubtaskHandler());
